@@ -55,6 +55,7 @@ const config: Config = {
       },
       fontFamily: {
         sans: [
+          '"Plus Jakarta Sans"',
           "ui-sans-serif",
           "system-ui",
           "-apple-system",

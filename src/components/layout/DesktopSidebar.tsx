@@ -1,10 +1,12 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/context/auth-context';
+import { localDb } from '@/lib/storage/local-db';
+import { LogoutConfirmModal } from './LogoutConfirmModal';
 import {
   LayoutDashboard,
   Store,
@@ -22,6 +24,7 @@ import {
 export function DesktopSidebar() {
   const pathname = usePathname();
   const { profile, isAdmin, signOut } = useAuth();
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
   const cashierNav = [
     { name: 'Kasir (POS)', href: '/pos', icon: Store },
@@ -141,14 +144,27 @@ export function DesktopSidebar() {
             </div>
           </div>
           <button
-            onClick={() => signOut()}
-            title="Keluar"
+            type="button"
+            onClick={() => setIsLogoutModalOpen(true)}
+            title="Keluar Akun"
             className="p-2 text-muted hover:text-rose-600 hover:bg-rose-50 rounded-ios transition-colors"
           >
             <LogOut className="w-4 h-4" />
           </button>
         </div>
       </div>
+
+      <LogoutConfirmModal
+        isOpen={isLogoutModalOpen}
+        profile={profile}
+        onClose={() => setIsLogoutModalOpen(false)}
+        onConfirm={(remember) => {
+          if (!remember) {
+            localDb.clearRememberedUser();
+          }
+          signOut();
+        }}
+      />
     </aside>
   );
 }

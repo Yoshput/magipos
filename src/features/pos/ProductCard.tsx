@@ -1,7 +1,7 @@
 import React from 'react';
 import { Product } from '@/types';
 import { formatRupiah } from '@/lib/format';
-import { Plus, AlertCircle, Sparkles } from 'lucide-react';
+import { Plus, AlertCircle } from 'lucide-react';
 import { ResponsiveProductImage } from '@/components/ui/ResponsiveProductImage';
 
 interface ProductCardProps {

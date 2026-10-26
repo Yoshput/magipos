@@ -10,7 +10,6 @@ import {
   TrendingUp,
   Receipt,
   Boxes,
-  Sparkles,
   ArrowRight,
   CheckCircle2,
   FileSpreadsheet,
@@ -173,10 +172,10 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/80 backdrop-blur-md border border-white/60 text-nyeni-blue text-xs font-bold shadow-xs mb-6"
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/80 backdrop-blur-md border border-white/60 text-nyeni-blue text-xs font-bold shadow-xs mb-6"
           >
-            <Sparkles className="w-3.5 h-3.5 text-nyeni-mango" />
-            <span>Sistem Kasir & Operasional Khusus Dessert Cup Mango Nyeni</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-nyeni-blue" />
+            <span>Sistem Kasir & Operasional Resmi Mango Nyeni</span>
           </motion.div>
 
           <motion.h1
@@ -213,7 +212,7 @@ export default function LandingPage() {
               href="/pos"
               className="px-6 py-3.5 rounded-full bg-nyeni-navy hover:bg-nyeni-blue text-white font-extrabold text-sm shadow-xl hover:shadow-2xl transition-all flex items-center gap-2 group"
             >
-              <Store className="w-4 h-4 text-nyeni-mango" />
+              <Store className="w-4 h-4 text-white" />
               <span>Mulai Transaksi Kasir (POS)</span>
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
@@ -303,17 +302,15 @@ export default function LandingPage() {
                   className="w-full h-full"
                 />
               </div>
-              <p className="text-[11px] text-slate-500 font-semibold mt-2.5 flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-nyeni-mango" />
-                <span>Klik ikon zoom di kanan bawah foto untuk resolusi 3x HD</span>
+              <p className="text-[11px] text-slate-500 font-semibold mt-2.5 text-center">
+                Klik ikon zoom di kanan bawah foto untuk resolusi detail
               </p>
             </div>
 
             {/* Right: Product Info & Pricing */}
             <div className="lg:col-span-7 flex flex-col justify-between">
               <div>
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-nyeni-blue-soft text-nyeni-blue text-xs font-bold mb-3">
-                  <Sparkles className="w-3.5 h-3.5" />
+                <div className="inline-flex items-center px-3 py-1 rounded-full bg-nyeni-blue-soft text-nyeni-blue text-xs font-bold mb-3">
                   <span>{currentProd.badge}</span>
                 </div>
                 <h3 className="text-2xl sm:text-3xl font-black text-nyeni-navy tracking-tight">
@@ -426,7 +423,7 @@ export default function LandingPage() {
         <section id="laporan" className="px-4 sm:px-6 py-12 max-w-6xl mx-auto w-full">
           <div className="backdrop-blur-xl bg-gradient-to-r from-nyeni-navy to-[#18348a] rounded-[28px] p-8 sm:p-12 text-white shadow-xl grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             <div className="lg:col-span-7">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-nyeni-mango text-xs font-bold mb-3 border border-white/10">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-white text-xs font-bold mb-3 border border-white/10">
                 <FileSpreadsheet className="w-3.5 h-3.5" />
                 <span>Pusat Laporan Lengkap</span>
               </div>

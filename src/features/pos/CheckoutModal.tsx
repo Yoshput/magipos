@@ -308,7 +308,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess }: CheckoutModalProps
                   className="w-full px-3 py-2 text-xs font-mono rounded-lg border border-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-nyeni-blue/30 focus:border-nyeni-blue"
                 />
                 <p className="text-[10px] text-slate-500 mt-1">
-                  💡 Cocokkan dengan notifikasi aplikasi GoBiz kasir untuk menghindari bukti bayar palsu.
+                  Petunjuk: Cocokkan dengan notifikasi aplikasi GoBiz kasir untuk validasi transaksi.
                 </p>
               </div>
             </div>

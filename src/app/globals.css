@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -5,7 +7,9 @@
 @layer base {
   :root {
     --nyeni-navy: #142A72;
+    --nyeni-navy-hover: #0F2056;
     --nyeni-blue: #1769E8;
+    --nyeni-blue-hover: #1254BA;
     --nyeni-blue-soft: #EAF2FF;
     --nyeni-mango: #FFC928;
     --nyeni-mango-soft: #FFF5D1;
@@ -19,9 +23,10 @@
   body {
     background-color: var(--background);
     color: var(--foreground);
-    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-family: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    letter-spacing: -0.01em;
   }
 }
 

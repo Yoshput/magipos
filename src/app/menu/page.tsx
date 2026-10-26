@@ -17,7 +17,6 @@ import {
   Plus,
   Edit2,
   Trash2,
-  Sparkles,
   BookOpen,
   X,
   Loader2,
@@ -324,8 +323,8 @@ export default function MenuPage() {
                   className="p-4 rounded-ios border border-border bg-slate-50/40 flex items-center justify-between"
                 >
                   <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-lg bg-nyeni-mango-soft text-amber-800 flex items-center justify-center">
-                      <Sparkles className="w-4 h-4 text-nyeni-mango" />
+                    <div className="w-8 h-8 rounded-lg bg-nyeni-blue-soft text-nyeni-blue flex items-center justify-center">
+                      <Plus className="w-4 h-4" />
                     </div>
                     <div>
                       <h4 className="text-sm font-bold text-foreground">{addon.name}</h4>

@@ -103,10 +103,10 @@ function DynamicIslandContainer({
       case 'error':
         return <XCircle className="w-5 h-5 text-rose-400" />;
       case 'cart':
-        return <ShoppingBag className="w-5 h-5 text-nyeni-mango" />;
+        return <ShoppingBag className="w-5 h-5 text-nyeni-blue" />;
       case 'info':
       default:
-        return <Sparkles className="w-5 h-5 text-nyeni-blue-light" />;
+        return <Info className="w-5 h-5 text-nyeni-blue" />;
     }
   };
 

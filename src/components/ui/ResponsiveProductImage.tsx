@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ZoomIn, X, Sparkles } from 'lucide-react';
+import { ZoomIn, X } from 'lucide-react';
 
 interface ResponsiveProductImageProps {
   src?: string | null;
@@ -109,10 +109,10 @@ export function ResponsiveProductImage({
             >
               <div className="w-full flex items-center justify-between pb-3 border-b border-white/10 mb-3">
                 <div className="flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-nyeni-mango" />
+                  <span className="w-2 h-2 rounded-full bg-nyeni-blue" />
                   <span className="text-sm font-bold text-white">{alt}</span>
                   <span className="text-[10px] bg-white/15 text-white/80 font-mono px-2 py-0.5 rounded-full">
-                    Zoom HD 3x WebP
+                    Resolusi Tinggi (WebP)
                   </span>
                 </div>
                 <button
