@@ -23,20 +23,27 @@ export function DesktopSidebar() {
   const pathname = usePathname();
   const { profile, isAdmin, signOut } = useAuth();
 
-  const mainNav = [
-    { name: 'Ringkasan', href: '/dashboard', icon: LayoutDashboard },
+  const cashierNav = [
     { name: 'Kasir (POS)', href: '/pos', icon: Store },
-    { name: 'Transaksi', href: '/transactions', icon: Receipt },
-    { name: 'Stok Bahan', href: '/inventory', icon: Boxes },
+    { name: 'Riwayat Transaksi', href: '/transactions', icon: Receipt },
+  ];
+
+  const adminMainNav = [
+    { name: 'Ringkasan Eksekutif', href: '/dashboard', icon: LayoutDashboard },
+    { name: 'Kasir (POS)', href: '/pos', icon: Store },
+    { name: 'Transaksi & Void', href: '/transactions', icon: Receipt },
+    { name: 'Stok Bahan Baku', href: '/inventory', icon: Boxes },
   ];
 
   const adminNav = [
-    { name: 'Laporan Keuangan', href: '/reports', icon: BarChart3 },
-    { name: 'Menu & Resep', href: '/menu', icon: UtensilsCrossed },
-    { name: 'Pengeluaran', href: '/expenses', icon: Wallet },
-    { name: 'Pengguna', href: '/users', icon: Users },
-    { name: 'Pengaturan', href: '/settings', icon: Settings },
+    { name: 'Laporan Finansial', href: '/reports', icon: BarChart3 },
+    { name: 'Menu & Resep Takaran', href: '/menu', icon: UtensilsCrossed },
+    { name: 'Pengeluaran Operasional', href: '/expenses', icon: Wallet },
+    { name: 'Kelola Akun Kasir', href: '/users', icon: Users },
+    { name: 'Pengaturan & Backup', href: '/settings', icon: Settings },
   ];
+
+  const navItems = isAdmin ? adminMainNav : cashierNav;
 
   return (
     <aside className="hidden lg:flex flex-col w-64 bg-white border-r border-border h-screen sticky top-0 shrink-0 select-none">
@@ -62,10 +69,10 @@ export function DesktopSidebar() {
       <div className="flex-1 overflow-y-auto px-3 py-4 space-y-6">
         <div>
           <p className="px-3 text-[11px] font-bold text-muted uppercase tracking-wider mb-2">
-            Operasional
+            {isAdmin ? 'Menu Operasional' : 'Menu Kasir'}
           </p>
           <nav className="space-y-1">
-            {mainNav.map((item) => {
+            {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href));
               return (
@@ -128,8 +135,8 @@ export function DesktopSidebar() {
                   isAdmin ? 'bg-amber-500' : 'bg-nyeni-blue'
                 }`}
               />
-              <span className="text-xs font-medium text-muted capitalize">
-                {profile?.role || 'Kasir'}
+              <span className="text-xs font-medium text-muted">
+                @{profile?.username || (isAdmin ? 'admin' : 'kasir')} &bull; {isAdmin ? 'Admin' : 'Kasir'}
               </span>
             </div>
           </div>

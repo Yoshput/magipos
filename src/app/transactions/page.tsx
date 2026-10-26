@@ -10,6 +10,7 @@ import { LoadingSkeleton } from '@/components/ui/LoadingSkeleton';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { useAuth } from '@/context/auth-context';
+import { useNotification } from '@/context/notification-context';
 import { localDb } from '@/lib/storage/local-db';
 import { Sale, BusinessSettings } from '@/types';
 import { formatRupiah, formatDateTime } from '@/lib/format';
@@ -24,6 +25,7 @@ import {
 
 export default function TransactionsPage() {
   const { profile, isAdmin } = useAuth();
+  const { notify } = useNotification();
 
   const [sales, setSales] = useState<Sale[]>([]);
   const [settings, setSettings] = useState<BusinessSettings | null>(null);
@@ -76,6 +78,11 @@ export default function TransactionsPage() {
 
     try {
       localDb.voidSale(saleToVoid.id, profile.id, reason);
+      notify({
+        type: 'warning',
+        title: `Transaksi #${saleToVoid.receipt_number} Telah Dibatalkan (Void)`,
+        message: 'Stok bahan baku terkait telah dikembalikan ke inventori secara otomatis.',
+      });
       fetchSales();
       setSaleToVoid(null);
       if (selectedSaleForDetail?.id === saleToVoid.id) {
@@ -95,7 +102,8 @@ export default function TransactionsPage() {
       const matchSearch =
         s.receipt_number.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (s.cashier?.full_name &&
-          s.cashier.full_name.toLowerCase().includes(searchQuery.toLowerCase()));
+          s.cashier.full_name.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (s.qris_reference && s.qris_reference.toLowerCase().includes(searchQuery.toLowerCase()));
       const matchStatus = statusFilter === 'all' || s.status === statusFilter;
       const matchPayment = paymentFilter === 'all' || s.payment_method === paymentFilter;
 

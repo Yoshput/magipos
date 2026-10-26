@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import Image from 'next/image';
 import { AppShell } from '@/components/layout/AppShell';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { StatusBadge } from '@/components/ui/StatusBadge';
@@ -12,6 +11,7 @@ import { useAuth } from '@/context/auth-context';
 import { localDb } from '@/lib/storage/local-db';
 import { Product, ProductVariant, Addon, Ingredient } from '@/types';
 import { formatRupiah, formatNumber } from '@/lib/format';
+import { ResponsiveProductImage } from '@/components/ui/ResponsiveProductImage';
 import {
   UtensilsCrossed,
   Plus,
@@ -194,13 +194,13 @@ export default function MenuPage() {
               {/* Product Header */}
               <div className="flex items-start justify-between pb-4 border-b border-slate-100">
                 <div className="flex items-center gap-3.5">
-                  <div className="w-14 h-14 rounded-2xl bg-slate-50 border border-border relative overflow-hidden flex items-center justify-center p-1">
-                    <Image
-                      src={product.image_path || '/assets/logo-mango-nyeni.png'}
+                  <div className="w-14 h-14 rounded-2xl bg-slate-50 border border-border relative overflow-hidden flex items-center justify-center p-1 shrink-0">
+                    <ResponsiveProductImage
+                      src={product.image_path}
                       alt={product.name}
-                      width={52}
-                      height={52}
-                      className="object-contain"
+                      size="sm"
+                      allowZoom={true}
+                      className="w-full h-full"
                     />
                   </div>
                   <div>

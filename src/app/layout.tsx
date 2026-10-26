@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { AuthProvider } from '@/context/auth-context';
 import { CartProvider } from '@/context/cart-context';
+import { NotificationProvider } from '@/context/notification-context';
 
 export const metadata: Metadata = {
   title: 'NyeniPOS — Mango Nyeni POS & Operational System',
@@ -30,7 +31,9 @@ export default function RootLayout({
     <html lang="id">
       <body>
         <AuthProvider>
-          <CartProvider>{children}</CartProvider>
+          <NotificationProvider>
+            <CartProvider>{children}</CartProvider>
+          </NotificationProvider>
         </AuthProvider>
       </body>
     </html>

@@ -1,8 +1,8 @@
 import React from 'react';
-import Image from 'next/image';
 import { Product } from '@/types';
 import { formatRupiah } from '@/lib/format';
 import { Plus, AlertCircle, Sparkles } from 'lucide-react';
+import { ResponsiveProductImage } from '@/components/ui/ResponsiveProductImage';
 
 interface ProductCardProps {
   product: Product;
@@ -26,17 +26,17 @@ export function ProductCard({ product, onSelect }: ProductCardProps) {
       className="group bg-white rounded-ios-card border border-border p-3.5 sm:p-4 shadow-ios hover:shadow-ios-float hover:border-nyeni-blue/40 transition-all cursor-pointer flex flex-col justify-between select-none relative overflow-hidden"
     >
       <div>
-        {/* Image Container */}
+        {/* Image Container with 3-tier Responsive WebP */}
         <div className="w-full aspect-square rounded-ios bg-slate-50 relative overflow-hidden mb-3 border border-slate-100 flex items-center justify-center p-2 group-hover:scale-[1.02] transition-transform">
-          <Image
-            src={product.image_path || '/assets/logo-mango-nyeni.png'}
+          <ResponsiveProductImage
+            src={product.image_path}
             alt={product.name}
-            fill
-            className="object-contain p-2"
-            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            size="sm"
+            allowZoom={true}
+            className="w-full h-full"
           />
           {!hasAnyRecipe && (
-            <div className="absolute top-2 right-2 bg-amber-500/95 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-xs flex items-center gap-1 backdrop-blur-xs">
+            <div className="absolute top-2 right-2 bg-amber-500/95 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-xs flex items-center gap-1 backdrop-blur-xs z-10">
               <AlertCircle className="w-3 h-3" />
               <span>Resep Belum Diisi</span>
             </div>

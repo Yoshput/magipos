@@ -124,6 +124,13 @@ export function ReceiptModal({ sale, settings, onClose }: ReceiptModalProps) {
               <span className="font-bold uppercase">{sale.payment_method}</span>
             </div>
 
+            {sale.payment_method === 'qris' && sale.qris_reference && (
+              <div className="flex justify-between text-[11px] text-slate-700">
+                <span>Ref GoPay/QRIS:</span>
+                <span className="font-mono font-bold text-slate-900">{sale.qris_reference}</span>
+              </div>
+            )}
+
             {sale.payment_method === 'cash' && (
               <>
                 <div className="flex justify-between text-[11px] text-slate-700">

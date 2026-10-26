@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useCart } from '@/context/cart-context';
 import { useAuth } from '@/context/auth-context';
+import { useNotification } from '@/context/notification-context';
 import { PaymentMethod, Sale } from '@/types';
 import { formatRupiah, generateReceiptNumber } from '@/lib/format';
 import { calculateChangeDue } from '@/lib/calculations';
@@ -15,6 +16,8 @@ import {
   CheckCircle2,
   AlertCircle,
   Loader2,
+  Smartphone,
+  ShieldCheck,
 } from 'lucide-react';
 
 interface CheckoutModalProps {
@@ -26,9 +29,11 @@ interface CheckoutModalProps {
 export function CheckoutModal({ isOpen, onClose, onSuccess }: CheckoutModalProps) {
   const { items, subtotal, discountIdr, total, clearCart } = useCart();
   const { profile } = useAuth();
+  const { notify } = useNotification();
 
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('cash');
   const [cashReceived, setCashReceived] = useState<number>(total);
+  const [qrisReference, setQrisReference] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [idempotencyKey, setIdempotencyKey] = useState('');
@@ -38,6 +43,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess }: CheckoutModalProps
     if (isOpen) {
       setIdempotencyKey(`sale_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`);
       setCashReceived(total);
+      setQrisReference('');
       setErrorMessage('');
     }
   }, [isOpen, total]);
@@ -107,8 +113,17 @@ export function CheckoutModal({ isOpen, onClose, onSuccess }: CheckoutModalProps
         paymentMethod === 'cash' ? cashReceived : null,
         paymentMethod === 'cash' ? changeDue : 0,
         idempotencyKey,
-        itemsPayload
+        itemsPayload,
+        {
+          qris_reference: paymentMethod === 'qris' ? qrisReference.trim() || null : null,
+        }
       );
+
+      notify({
+        type: 'success',
+        title: `Transaksi #${receiptNumber} Selesai!`,
+        message: `Total ${formatRupiah(total)} via ${paymentMethod.toUpperCase()} berhasil dicatat.`,
+      });
 
       clearCart();
       onSuccess(completedSale);
@@ -252,17 +267,50 @@ export function CheckoutModal({ isOpen, onClose, onSuccess }: CheckoutModalProps
           )}
 
           {paymentMethod === 'qris' && (
-            <div className="p-4 bg-slate-50 rounded-ios border border-slate-200 text-center space-y-2">
-              <div className="w-36 h-36 mx-auto bg-white border border-slate-300 rounded-xl p-2 flex flex-col items-center justify-center shadow-xs">
-                <QrCode className="w-24 h-24 text-slate-800" />
-                <span className="text-[10px] font-bold text-slate-500 mt-1 uppercase">QRIS STANDAR</span>
+            <div className="p-4 bg-slate-50/90 rounded-ios-card border border-slate-200 text-center space-y-3">
+              {/* GoPay & QRIS Header */}
+              <div className="flex items-center justify-between pb-2 border-b border-slate-200 text-xs">
+                <span className="font-extrabold text-nyeni-navy flex items-center gap-1.5">
+                  <Smartphone className="w-4 h-4 text-emerald-600" />
+                  <span>GoPay Merchant / QRIS</span>
+                </span>
+                <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">
+                  Siap Scan
+                </span>
               </div>
-              <p className="text-xs font-semibold text-foreground">
-                Tampilkan QR kepada pembeli untuk scan pembayaran.
+
+              {/* QR Code Container */}
+              <div className="w-36 h-36 mx-auto bg-white border border-slate-300 rounded-2xl p-2.5 flex flex-col items-center justify-center shadow-xs">
+                <QrCode className="w-24 h-24 text-slate-800" />
+                <span className="text-[9px] font-black text-slate-500 mt-1 uppercase tracking-wider">
+                  QRIS GO-PAY / BCA / SHOPEE
+                </span>
+              </div>
+
+              <p className="text-xs font-bold text-foreground">
+                Arahkan pelanggan scan QRIS atau stiker QR GoPay di meja kasir.
               </p>
-              <p className="text-[11px] text-muted">
-                Jumlah pas: <span className="font-bold text-nyeni-navy">{formatRupiah(total)}</span>
+              <p className="text-xs text-muted">
+                Nominal Tagihan:{' '}
+                <span className="font-extrabold text-nyeni-navy text-sm">{formatRupiah(total)}</span>
               </p>
+
+              {/* GoBiz / GoPay Reference Input */}
+              <div className="text-left pt-2 border-t border-slate-200/80">
+                <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                  Nomor Referensi Transaksi GoBiz (Opsional):
+                </label>
+                <input
+                  type="text"
+                  value={qrisReference}
+                  onChange={(e) => setQrisReference(e.target.value)}
+                  placeholder="Contoh: 4 digit terakhir / Ref #8821"
+                  className="w-full px-3 py-2 text-xs font-mono rounded-lg border border-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-nyeni-blue/30 focus:border-nyeni-blue"
+                />
+                <p className="text-[10px] text-slate-500 mt-1">
+                  💡 Cocokkan dengan notifikasi aplikasi GoBiz kasir untuk menghindari bukti bayar palsu.
+                </p>
+              </div>
             </div>
           )}
 

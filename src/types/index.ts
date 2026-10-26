@@ -3,6 +3,7 @@ export type UserRole = 'admin' | 'cashier';
 export interface Profile {
   id: string;
   email: string | null;
+  username?: string;
   full_name: string;
   role: UserRole;
   is_active: boolean;
@@ -96,6 +97,8 @@ export interface Sale {
   change_due_idr: number | null;
   total_cogs_idr: number;
   idempotency_key: string;
+  qris_reference?: string | null;
+  notes?: string | null;
   void_reason: string | null;
   void_by: string | null;
   void_at: string | null;

@@ -1,11 +1,11 @@
 'use client';
 
 import React, { useState } from 'react';
-import Image from 'next/image';
 import { Product, ProductVariant, Addon } from '@/types';
 import { formatRupiah } from '@/lib/format';
 import { useCart } from '@/context/cart-context';
 import { X, Check, AlertCircle, ShoppingCart } from 'lucide-react';
+import { ResponsiveProductImage } from '@/components/ui/ResponsiveProductImage';
 
 interface VariantSelectorModalProps {
   product: Product | null;
@@ -59,18 +59,18 @@ export function VariantSelectorModal({
         {/* Header */}
         <div className="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-slate-50 border border-border p-1 relative overflow-hidden flex items-center justify-center">
-              <Image
-                src={product.image_path || '/assets/logo-mango-nyeni.png'}
+            <div className="w-14 h-14 rounded-xl bg-slate-50 border border-border p-1 relative overflow-hidden flex items-center justify-center shrink-0">
+              <ResponsiveProductImage
+                src={product.image_path}
                 alt={product.name}
-                width={48}
-                height={48}
-                className="object-contain"
+                size="md"
+                allowZoom={true}
+                className="w-full h-full"
               />
             </div>
             <div>
               <h3 className="text-base font-bold text-nyeni-navy">{product.name}</h3>
-              <p className="text-xs text-muted">{product.category}</p>
+              <p className="text-xs text-muted">{product.category} &bull; Klik gambar untuk zoom</p>
             </div>
           </div>
           <button

@@ -24,18 +24,25 @@ export function MobileBottomNav() {
   const { profile, isAdmin, signOut } = useAuth();
   const [isMoreOpen, setIsMoreOpen] = useState(false);
 
-  const mainTabs = [
+  const adminTabs = [
     { name: 'Ringkasan', href: '/dashboard', icon: LayoutDashboard },
     { name: 'Kasir', href: '/pos', icon: Store },
     { name: 'Transaksi', href: '/transactions', icon: Receipt },
     { name: 'Stok', href: '/inventory', icon: Boxes },
   ];
 
+  const cashierTabs = [
+    { name: 'Kasir POS', href: '/pos', icon: Store },
+    { name: 'Transaksi', href: '/transactions', icon: Receipt },
+  ];
+
+  const mainTabs = isAdmin ? adminTabs : cashierTabs;
+
   const adminMoreTabs = [
     { name: 'Laporan Keuangan', href: '/reports', icon: BarChart3 },
     { name: 'Menu & Resep', href: '/menu', icon: UtensilsCrossed },
     { name: 'Pengeluaran', href: '/expenses', icon: Wallet },
-    { name: 'Pengguna', href: '/users', icon: Users },
+    { name: 'Pengguna & Kasir', href: '/users', icon: Users },
     { name: 'Pengaturan', href: '/settings', icon: Settings },
   ];
 

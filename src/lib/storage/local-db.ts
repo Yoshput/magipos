@@ -19,9 +19,9 @@ import {
   AuditLog,
   BusinessSettings,
   PaymentMethod,
-} from '@/types';
-import { calculateWeightedAverageCost } from '@/lib/calculations';
-import { generateReceiptNumber } from '@/lib/format';
+} from '../../types';
+import { calculateWeightedAverageCost } from '../calculations';
+import { generateReceiptNumber } from '../format';
 
 const STORAGE_KEY = 'nyeni_pos_database_v1';
 const SESSION_COOKIE = 'nyeni_session';
@@ -52,8 +52,9 @@ export const DEFAULT_DATABASE: DatabaseSchema = {
   profiles: [
     {
       id: 'usr_admin_001',
-      email: 'admin@mangonyeni.com',
-      full_name: 'Owner Mango Nyeni (Admin)',
+      username: 'admin',
+      email: 'admin@magi.com',
+      full_name: 'Owner & General Manager (Admin)',
       role: 'admin',
       is_active: true,
       created_at: '2026-10-26T00:00:00.000Z',
@@ -61,8 +62,9 @@ export const DEFAULT_DATABASE: DatabaseSchema = {
     },
     {
       id: 'usr_cashier_001',
-      email: 'kasir@mangonyeni.com',
-      full_name: 'Kasir Outlet 1 (Operator)',
+      username: 'kasir_yossika',
+      email: 'kasir_yossika@magi.com',
+      full_name: 'Yossika (Kasir Utama)',
       role: 'cashier',
       is_active: true,
       created_at: '2026-10-26T00:00:00.000Z',
@@ -70,7 +72,12 @@ export const DEFAULT_DATABASE: DatabaseSchema = {
     },
   ],
   credentials: {
+    'admin': 'admin123',
+    'admin@magi.com': 'admin123',
     'admin@mangonyeni.com': 'admin123',
+    'kasir_yossika': 'kasirsukses2026',
+    'kasir_yossika@magi.com': 'kasirsukses2026',
+    'kasir': 'kasir123',
     'kasir@mangonyeni.com': 'kasir123',
   },
   products: [
@@ -79,7 +86,7 @@ export const DEFAULT_DATABASE: DatabaseSchema = {
       name: 'Dragon Sago',
       description: 'Dessert cup segar dengan perpaduan buah naga merah pilihan, sagu mutiara, dan kuah creamy spesial Mango Nyeni.',
       category: 'Dessert Cup',
-      image_path: '/assets/mango-sago-only.png',
+      image_path: '/assets/naga-sago-splash-promo.webp',
       is_active: true,
       sort_order: 1,
       created_at: '2026-10-26T00:00:00.000Z',
@@ -90,7 +97,7 @@ export const DEFAULT_DATABASE: DatabaseSchema = {
       name: 'Mango Sago',
       description: 'Dessert cup signature dengan mangga harum manis legit berlimpah, jelly mangga, dan racikan susu gurih manis.',
       category: 'Dessert Cup',
-      image_path: '/assets/mango-sago-splash-stack.png',
+      image_path: '/assets/mango-sago-splash-stack.webp',
       is_active: true,
       sort_order: 2,
       created_at: '2026-10-26T00:00:00.000Z',
@@ -101,7 +108,7 @@ export const DEFAULT_DATABASE: DatabaseSchema = {
       name: 'Strawberry Sago',
       description: 'Dessert cup sensasi asam manis stroberi segar dengan sagu mutiara kenyal dan kuah susu kental manis gurih.',
       category: 'Dessert Cup',
-      image_path: '/assets/mango-sago-only.png',
+      image_path: '/assets/strawberry-sago-summer-delight.webp',
       is_active: true,
       sort_order: 3,
       created_at: '2026-10-26T00:00:00.000Z',
@@ -280,7 +287,49 @@ class LocalStoreManager {
         this.saveDb(DEFAULT_DATABASE);
         return DEFAULT_DATABASE;
       }
-      return JSON.parse(stored) as DatabaseSchema;
+      const db = JSON.parse(stored) as DatabaseSchema;
+
+      // Auto-migration & consistency check
+      let modified = false;
+      if (!db.credentials) {
+        db.credentials = { ...DEFAULT_DATABASE.credentials };
+        modified = true;
+      }
+      for (const [key, val] of Object.entries(DEFAULT_DATABASE.credentials)) {
+        if (!db.credentials[key]) {
+          db.credentials[key] = val;
+          modified = true;
+        }
+      }
+
+      // Update image paths to WebP if still on PNG
+      for (const p of db.products || []) {
+        if (p.id === 'prod_dragon_sago' && (!p.image_path || p.image_path.includes('.png'))) {
+          p.image_path = '/assets/naga-sago-splash-promo.webp';
+          modified = true;
+        } else if (p.id === 'prod_mango_sago' && (!p.image_path || p.image_path.includes('.png'))) {
+          p.image_path = '/assets/mango-sago-splash-stack.webp';
+          modified = true;
+        } else if (p.id === 'prod_strawberry_sago' && (!p.image_path || p.image_path.includes('.png'))) {
+          p.image_path = '/assets/strawberry-sago-summer-delight.webp';
+          modified = true;
+        }
+      }
+
+      // Ensure profiles have username
+      for (const u of db.profiles || []) {
+        if (!u.username) {
+          if (u.role === 'admin') u.username = 'admin';
+          else if (u.email?.includes('yossika')) u.username = 'kasir_yossika';
+          else u.username = u.email ? u.email.split('@')[0] : `user_${u.id}`;
+          modified = true;
+        }
+      }
+
+      if (modified) {
+        this.saveDb(db);
+      }
+      return db;
     } catch (err) {
       console.error('Failed to parse local database:', err);
       return DEFAULT_DATABASE;
@@ -302,23 +351,33 @@ class LocalStoreManager {
   }
 
   // ---------------- AUTH ----------------
-  public login(email: string, pass: string): { user: Profile; token: string } | null {
+  public login(identifier: string, pass: string): { user: Profile; token: string } | null {
     const db = this.getDb();
-    const storedPass = db.credentials[email.toLowerCase().trim()];
-    if (!storedPass || storedPass !== pass) {
-      return null;
-    }
+    const cleanId = identifier.toLowerCase().trim();
 
+    // Check matching profile by username or email
     const profile = db.profiles.find(
-      (p) => p.email?.toLowerCase() === email.toLowerCase().trim() && p.is_active
+      (p) =>
+        (p.username?.toLowerCase() === cleanId || p.email?.toLowerCase() === cleanId) &&
+        p.is_active
     );
 
     if (!profile) return null;
 
+    // Check credentials by cleanId, profile.username, or profile.email
+    const expectedPass =
+      db.credentials[cleanId] ||
+      (profile.username ? db.credentials[profile.username.toLowerCase()] : undefined) ||
+      (profile.email ? db.credentials[profile.email.toLowerCase()] : undefined);
+
+    if (!expectedPass || expectedPass !== pass) {
+      return null;
+    }
+
     // Set cookie for Next.js middleware recognition
     if (this.isBrowser()) {
       document.cookie = `${SESSION_COOKIE}=${encodeURIComponent(
-        JSON.stringify({ id: profile.id, role: profile.role })
+        JSON.stringify({ id: profile.id, role: profile.role, username: profile.username })
       )}; path=/; max-age=86400; SameSite=Lax`;
     }
 
@@ -573,7 +632,11 @@ class LocalStoreManager {
         unit_price_idr: number;
         quantity: number;
       }>;
-    }>
+    }>,
+    options?: {
+      qris_reference?: string | null;
+      notes?: string | null;
+    }
   ): Sale {
     const db = this.getDb();
 
@@ -648,6 +711,8 @@ class LocalStoreManager {
       change_due_idr: changeDueIdr,
       total_cogs_idr: totalCogs,
       idempotency_key: idempotencyKey,
+      qris_reference: options?.qris_reference || null,
+      notes: options?.notes || null,
       void_reason: null,
       void_by: null,
       void_at: null,
@@ -783,17 +848,34 @@ class LocalStoreManager {
   }
 
   // ---------------- USER MANAGEMENT ----------------
-  public createUser(fullName: string, email: string, pass: string, role: 'admin' | 'cashier'): Profile {
+  public createUser(
+    fullName: string,
+    emailOrUsername: string,
+    pass: string,
+    role: 'admin' | 'cashier',
+    customUsername?: string
+  ): Profile {
     const db = this.getDb();
-    const normalizedEmail = email.toLowerCase().trim();
+    const cleanInput = emailOrUsername.toLowerCase().trim();
+    const isEmail = cleanInput.includes('@');
 
-    if (db.profiles.some((p) => p.email?.toLowerCase() === normalizedEmail)) {
-      throw new Error('Email sudah terdaftar di sistem.');
+    const email = isEmail ? cleanInput : `${cleanInput}@magi.com`;
+    const username = (customUsername || (isEmail ? cleanInput.split('@')[0] : cleanInput))
+      .toLowerCase()
+      .trim();
+
+    if (db.profiles.some((p) => p.email?.toLowerCase() === email)) {
+      throw new Error(`Email "${email}" sudah terdaftar di sistem.`);
+    }
+
+    if (db.profiles.some((p) => p.username?.toLowerCase() === username)) {
+      throw new Error(`Username "${username}" sudah digunakan.`);
     }
 
     const newProfile: Profile = {
       id: `usr_${Date.now()}`,
-      email: normalizedEmail,
+      username,
+      email,
       full_name: fullName.trim(),
       role,
       is_active: true,
@@ -802,7 +884,8 @@ class LocalStoreManager {
     };
 
     db.profiles.push(newProfile);
-    db.credentials[normalizedEmail] = pass;
+    db.credentials[username] = pass;
+    db.credentials[email] = pass;
     this.saveDb(db);
     return newProfile;
   }

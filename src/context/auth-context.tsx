@@ -12,7 +12,7 @@ interface AuthContextType {
   isAdmin: boolean;
   isCashier: boolean;
   isConfigured: boolean;
-  login: (email: string, pass: string) => boolean;
+  login: (identifier: string, pass: string) => boolean;
   signOut: () => Promise<void>;
   refreshProfile: () => void;
 }

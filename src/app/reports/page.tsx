@@ -10,17 +10,22 @@ import { useAuth } from '@/context/auth-context';
 import { localDb } from '@/lib/storage/local-db';
 import { calculateFinancialMetrics } from '@/lib/calculations';
 import { generateCsv, downloadCsv } from '@/lib/csv';
+import { exportToExcel, exportToPdf } from '@/lib/export-reports';
+import { useNotification } from '@/context/notification-context';
 import { formatRupiah, formatNumber } from '@/lib/format';
 import {
   Download,
   Calendar,
   AlertCircle,
+  FileSpreadsheet,
+  FileText,
 } from 'lucide-react';
 
 type DatePreset = 'today' | 'yesterday' | 'last7' | 'this_month' | 'last_month' | 'custom';
 
 export default function ReportsPage() {
   const { isAdmin } = useAuth();
+  const { notify } = useNotification();
 
   const [preset, setPreset] = useState<DatePreset>('this_month');
   const [startDate, setStartDate] = useState('');
@@ -158,6 +163,62 @@ export default function ReportsPage() {
     return Object.values(map).sort((a, b) => b.cups - a.cups);
   }, [sales]);
 
+  // Export Excel Handler
+  const handleExportExcel = () => {
+    try {
+      exportToExcel({
+        periodLabel: preset === 'this_month' ? 'Bulan Ini' : preset === 'last7' ? '7 Hari Terakhir' : `${startDate} s/d ${endDate}`,
+        startDate,
+        endDate,
+        metrics,
+        sales,
+        expenses,
+        purchases,
+        ingredientsUsage,
+        topProducts,
+      });
+      notify({
+        type: 'success',
+        title: 'Ekspor Excel Berhasil',
+        message: 'File spreadsheet laporan keuangan (.xlsx) berhasil diunduh.',
+      });
+    } catch (err) {
+      notify({
+        type: 'error',
+        title: 'Gagal Ekspor Excel',
+        message: err instanceof Error ? err.message : 'Terjadi kesalahan saat memproses Excel.',
+      });
+    }
+  };
+
+  // Export PDF Handler
+  const handleExportPdf = () => {
+    try {
+      exportToPdf({
+        periodLabel: preset === 'this_month' ? 'Bulan Ini' : preset === 'last7' ? '7 Hari Terakhir' : `${startDate} s/d ${endDate}`,
+        startDate,
+        endDate,
+        metrics,
+        sales,
+        expenses,
+        purchases,
+        ingredientsUsage,
+        topProducts,
+      });
+      notify({
+        type: 'success',
+        title: 'Ekspor PDF Berhasil',
+        message: 'Dokumen laporan keuangan resmi (.pdf) berhasil diunduh.',
+      });
+    } catch (err) {
+      notify({
+        type: 'error',
+        title: 'Gagal Ekspor PDF',
+        message: err instanceof Error ? err.message : 'Terjadi kesalahan saat memproses PDF.',
+      });
+    }
+  };
+
   // Export CSV Handler
   const handleExportCsv = () => {
     const headers = [
@@ -187,6 +248,11 @@ export default function ReportsPage() {
     const csvContent = generateCsv(headers, rows);
     const filename = `Laporan_Penjualan_Mango_Nyeni_${startDate}_sd_${endDate}.csv`;
     downloadCsv(filename, csvContent);
+    notify({
+      type: 'info',
+      title: 'Ekspor CSV Berhasil',
+      message: 'File data mentah CSV berhasil diunduh.',
+    });
   };
 
   if (!isAdmin) {
@@ -209,14 +275,37 @@ export default function ReportsPage() {
         title="Laporan & Analitik Keuangan"
         subtitle="Analisis omzet bersih, HPP estimasi, laba operasional, dan pemisahan arus kas riil"
         action={
-          <button
-            onClick={handleExportCsv}
-            disabled={sales.length === 0}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-ios border border-border bg-white text-foreground hover:bg-slate-50 font-bold text-xs transition-colors shadow-xs disabled:opacity-50"
-          >
-            <Download className="w-4 h-4 text-nyeni-blue" />
-            <span>Ekspor CSV</span>
-          </button>
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              onClick={handleExportExcel}
+              disabled={sales.length === 0}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-ios border border-emerald-300 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 font-bold text-xs transition-colors shadow-xs disabled:opacity-50"
+              title="Ekspor seluruh data laporan ke file Excel (.xlsx)"
+            >
+              <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
+              <span>Ekspor Excel (.xlsx)</span>
+            </button>
+
+            <button
+              onClick={handleExportPdf}
+              disabled={sales.length === 0}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-ios border border-rose-300 bg-rose-50 text-rose-800 hover:bg-rose-100 font-bold text-xs transition-colors shadow-xs disabled:opacity-50"
+              title="Ekspor laporan resmi berformat PDF A4"
+            >
+              <FileText className="w-4 h-4 text-rose-600" />
+              <span>Ekspor PDF (.pdf)</span>
+            </button>
+
+            <button
+              onClick={handleExportCsv}
+              disabled={sales.length === 0}
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-ios border border-border bg-white text-slate-700 hover:bg-slate-50 font-bold text-xs transition-colors shadow-xs disabled:opacity-50"
+              title="Ekspor data transaksi mentah ke CSV RFC 4180"
+            >
+              <Download className="w-3.5 h-3.5 text-nyeni-blue" />
+              <span>CSV</span>
+            </button>
+          </div>
         }
       />
 
