@@ -6,6 +6,8 @@ import { calculateCartTotals } from '@/lib/calculations';
 
 interface CartContextType {
   items: CartItem[];
+  customerName: string;
+  setCustomerName: (name: string) => void;
   addItem: (variant: ProductVariant, product: Product, addons: Addon[], hasRecipe: boolean) => void;
   removeItem: (cartItemId: string) => void;
   updateQuantity: (cartItemId: string, newQty: number) => void;
@@ -19,6 +21,8 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType>({
   items: [],
+  customerName: '',
+  setCustomerName: () => {},
   addItem: () => {},
   removeItem: () => {},
   updateQuantity: () => {},
@@ -32,6 +36,7 @@ const CartContext = createContext<CartContextType>({
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
+  const [customerName, setCustomerName] = useState<string>('');
   const [discountIdr, setDiscountIdr] = useState(0);
 
   const addItem = (
@@ -93,6 +98,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const clearCart = () => {
     setItems([]);
     setDiscountIdr(0);
+    setCustomerName('');
   };
 
   const totals = useMemo(() => {
@@ -103,6 +109,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     <CartContext.Provider
       value={{
         items,
+        customerName,
+        setCustomerName,
         addItem,
         removeItem,
         updateQuantity,

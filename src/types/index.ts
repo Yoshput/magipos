@@ -90,6 +90,7 @@ export interface Sale {
   id: string;
   receipt_number: string;
   cashier_id: string;
+  customer_name?: string | null;
   status: SaleStatus;
   payment_method: PaymentMethod;
   subtotal_idr: number;

@@ -70,6 +70,7 @@ export function exportToExcel(data: ReportExportData): void {
   const salesHeaders = [
     'No. Struk',
     'Tanggal & Waktu',
+    'Nama Pembeli',
     'Petugas Kasir',
     'Metode Pembayaran',
     'Ref QRIS / Bank',
@@ -82,6 +83,7 @@ export function exportToExcel(data: ReportExportData): void {
   const salesRows = data.sales.map((s) => [
     s.receipt_number,
     new Date(s.created_at).toLocaleString('id-ID'),
+    s.customer_name || 'Pelanggan',
     s.cashier?.full_name || 'Kasir',
     s.payment_method?.toUpperCase(),
     s.qris_reference || '-',

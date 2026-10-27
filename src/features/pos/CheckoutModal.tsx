@@ -22,6 +22,7 @@ import {
   Copy,
   Check,
   Maximize2,
+  User,
 } from 'lucide-react';
 
 interface CheckoutModalProps {
@@ -31,7 +32,8 @@ interface CheckoutModalProps {
 }
 
 export function CheckoutModal({ isOpen, onClose, onSuccess }: CheckoutModalProps) {
-  const { items, subtotal, discountIdr, total, clearCart } = useCart();
+  const { items, customerName, setCustomerName, subtotal, discountIdr, total, clearCart } =
+    useCart();
   const { profile } = useAuth();
   const { notify } = useNotification();
 
@@ -151,6 +153,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess }: CheckoutModalProps
         idempotencyKey,
         itemsPayload,
         {
+          customer_name: customerName.trim() || 'Pelanggan',
           qris_reference: paymentMethod === 'qris' ? qrisReference.trim() || null : null,
         }
       );
@@ -192,7 +195,55 @@ export function CheckoutModal({ isOpen, onClose, onSuccess }: CheckoutModalProps
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-5">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4">
+          {/* Customer Name Input */}
+          <div className="bg-slate-50/80 p-3 sm:p-3.5 rounded-ios border border-slate-200/80 space-y-2">
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-bold text-nyeni-navy flex items-center gap-1.5 uppercase tracking-wider">
+                <User className="w-3.5 h-3.5 text-nyeni-blue" />
+                <span>Nama Pembeli / Pelanggan</span>
+              </label>
+              <span className="text-[10px] text-muted font-medium">Opsional</span>
+            </div>
+            <div className="relative">
+              <input
+                type="text"
+                value={customerName}
+                onChange={(e) => setCustomerName(e.target.value)}
+                placeholder="Contoh: Kak Dinda / Meja 3 / Umum"
+                className="w-full px-3 py-2 text-xs font-semibold rounded-ios border border-slate-200 bg-white text-nyeni-navy placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-nyeni-blue/30 focus:border-nyeni-blue transition-all"
+              />
+              {customerName && (
+                <button
+                  type="button"
+                  onClick={() => setCustomerName('')}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5"
+                  title="Hapus nama"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+            {/* Quick preset chips */}
+            <div className="flex items-center gap-1.5 overflow-x-auto pt-0.5 scrollbar-none">
+              <span className="text-[10px] text-slate-400 font-medium shrink-0">Cepat:</span>
+              {['Umum', 'Take Away', 'Dine In', 'Meja 1', 'Meja 2'].map((preset) => (
+                <button
+                  key={preset}
+                  type="button"
+                  onClick={() => setCustomerName(preset)}
+                  className={`text-[10px] px-2 py-0.5 rounded-full border transition-all ${
+                    customerName === preset
+                      ? 'border-nyeni-blue bg-nyeni-blue-soft text-nyeni-blue font-bold shadow-2xs'
+                      : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
+                  }`}
+                >
+                  {preset}
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Total Display */}
           <div className="bg-nyeni-blue-soft/50 rounded-ios p-4 text-center border border-nyeni-blue/20">
             <span className="text-xs font-bold text-nyeni-blue uppercase tracking-wider block">

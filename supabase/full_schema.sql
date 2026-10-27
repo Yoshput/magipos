@@ -118,6 +118,7 @@ CREATE TABLE IF NOT EXISTS public.sales (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   receipt_number TEXT NOT NULL UNIQUE,
   cashier_id UUID NOT NULL REFERENCES public.profiles(id),
+  customer_name TEXT DEFAULT 'Pelanggan',
   status TEXT NOT NULL DEFAULT 'completed' CHECK (status IN ('completed', 'void')),
   payment_method TEXT NOT NULL CHECK (payment_method IN ('cash', 'qris', 'transfer')),
   subtotal_idr INTEGER NOT NULL CHECK (subtotal_idr >= 0),
@@ -1148,4 +1149,8 @@ VALUES (
   true,
   ''
 )
+ON CONFLICT (id) DO NOTHING;
+
+-- Safe column migrations for existing databases
+ALTER TABLE public.sales ADD COLUMN IF NOT EXISTS customer_name TEXT DEFAULT 'Pelanggan';
 ON CONFLICT (id) DO NOTHING;

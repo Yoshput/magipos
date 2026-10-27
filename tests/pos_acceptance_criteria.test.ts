@@ -70,6 +70,35 @@ describe('Acceptance Criteria A through H (MAGIPOS Audit)', () => {
       expect(sale.change_due_idr).toBe(2000);
       expect(sale.items?.length).toBe(1);
       expect(sale.items?.[0].line_total_idr).toBe(13000);
+      expect(sale.customer_name).toBe('Pelanggan');
+    });
+
+    it('mencatat Nama Pembeli khusus pada transaksi kasir dan struk', () => {
+      const sale = localDb.createSale(
+        'TRX-CUST-001',
+        'usr_cashier_001',
+        'cash',
+        13000,
+        0,
+        13000,
+        13000,
+        0,
+        'idemp_cust_001',
+        [
+          {
+            variant_id: 'var_ms_200',
+            product_name: 'Mango Sago',
+            variant_name: '200 ml',
+            unit_price_idr: 13000,
+            quantity: 1,
+            line_total_idr: 13000,
+            addons: [],
+          },
+        ],
+        { customer_name: 'Kak Dinda' }
+      );
+
+      expect(sale.customer_name).toBe('Kak Dinda');
     });
   });
 

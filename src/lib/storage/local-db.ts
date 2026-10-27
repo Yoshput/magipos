@@ -946,6 +946,7 @@ class LocalStoreManager {
       }>;
     }>,
     options?: {
+      customer_name?: string | null;
       qris_reference?: string | null;
       notes?: string | null;
     }
@@ -1086,6 +1087,7 @@ class LocalStoreManager {
       id: saleId,
       receipt_number: receiptNumber,
       cashier_id: cashierId,
+      customer_name: options?.customer_name?.trim() || 'Pelanggan',
       status: 'completed',
       payment_method: paymentMethod,
       subtotal_idr: subtotalIdr,

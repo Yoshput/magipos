@@ -11,6 +11,7 @@ import {
   Sparkles,
   ArrowRight,
   Tag,
+  User,
   X,
 } from 'lucide-react';
 
@@ -23,6 +24,8 @@ interface CartPanelProps {
 export function CartPanel({ onCheckout, onClose, className = '' }: CartPanelProps) {
   const {
     items,
+    customerName,
+    setCustomerName,
     removeItem,
     updateQuantity,
     clearCart,
@@ -70,6 +73,30 @@ export function CartPanel({ onCheckout, onClose, className = '' }: CartPanelProp
             </button>
           )}
         </div>
+      </div>
+
+      {/* Customer Name Bar (Optional for faster cashier identification) */}
+      <div className="px-3.5 py-2 bg-slate-50 border-b border-slate-100 flex items-center gap-2">
+        <div className="w-6 h-6 rounded-full bg-nyeni-blue-soft text-nyeni-blue flex items-center justify-center shrink-0">
+          <User className="w-3.5 h-3.5" />
+        </div>
+        <input
+          type="text"
+          value={customerName}
+          onChange={(e) => setCustomerName(e.target.value)}
+          placeholder="Nama Pembeli (misal: Kak Dinda / Meja 3)..."
+          className="w-full text-xs bg-transparent border-none focus:outline-none placeholder:text-slate-400 font-semibold text-nyeni-navy"
+        />
+        {customerName && (
+          <button
+            type="button"
+            onClick={() => setCustomerName('')}
+            className="text-[11px] text-slate-400 hover:text-slate-600 p-0.5"
+            title="Hapus nama pembeli"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        )}
       </div>
 
       {/* Item List */}

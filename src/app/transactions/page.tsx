@@ -21,6 +21,7 @@ import {
   Ban,
   Eye,
   AlertTriangle,
+  User,
 } from 'lucide-react';
 
 export default function TransactionsPage() {
@@ -101,6 +102,8 @@ export default function TransactionsPage() {
     return sales.filter((s) => {
       const matchSearch =
         s.receipt_number.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (s.customer_name &&
+          s.customer_name.toLowerCase().includes(searchQuery.toLowerCase())) ||
         (s.cashier?.full_name &&
           s.cashier.full_name.toLowerCase().includes(searchQuery.toLowerCase())) ||
         (s.qris_reference && s.qris_reference.toLowerCase().includes(searchQuery.toLowerCase()));
@@ -129,7 +132,7 @@ export default function TransactionsPage() {
             <Search className="w-4 h-4 text-muted absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
-              placeholder="Cari No. Struk atau nama kasir..."
+              placeholder="Cari No. Struk, nama pembeli, atau kasir..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-2 text-sm rounded-ios border border-border bg-slate-50/50 focus:outline-none focus:ring-2 focus:ring-nyeni-blue/30 focus:border-nyeni-blue"
@@ -192,6 +195,7 @@ export default function TransactionsPage() {
                 <tr>
                   <th className="px-4 py-3">No. Transaksi</th>
                   <th className="px-4 py-3">Waktu</th>
+                  <th className="px-4 py-3">Pembeli</th>
                   <th className="px-4 py-3">Kasir</th>
                   <th className="px-4 py-3">Metode</th>
                   <th className="px-4 py-3">Status</th>
@@ -207,6 +211,12 @@ export default function TransactionsPage() {
                     </td>
                     <td className="px-4 py-3.5 text-muted whitespace-nowrap">
                       {formatDateTime(sale.created_at)}
+                    </td>
+                    <td className="px-4 py-3.5 text-nyeni-navy font-bold whitespace-nowrap">
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-nyeni-blue shrink-0" />
+                        <span>{sale.customer_name || 'Pelanggan'}</span>
+                      </div>
                     </td>
                     <td className="px-4 py-3.5 text-foreground whitespace-nowrap">
                       {sale.cashier?.full_name || 'Petugas'}
@@ -280,10 +290,14 @@ export default function TransactionsPage() {
             <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4 text-xs">
               {/* Status Header */}
               <div className="flex justify-between items-center p-3 rounded-ios bg-slate-50 border border-slate-100">
-                <div>
-                  <span className="text-muted block text-[11px]">Waktu Transaksi</span>
-                  <span className="font-semibold text-foreground">
-                    {formatDateTime(selectedSaleForDetail.created_at)}
+                <div className="space-y-0.5">
+                  <span className="text-muted block text-[10px] uppercase font-bold tracking-wider">Nama Pembeli</span>
+                  <span className="font-extrabold text-nyeni-navy text-sm flex items-center gap-1.5">
+                    <User className="w-4 h-4 text-nyeni-blue shrink-0" />
+                    <span>{selectedSaleForDetail.customer_name || 'Pelanggan'}</span>
+                  </span>
+                  <span className="text-[11px] text-muted block pt-0.5">
+                    {formatDateTime(selectedSaleForDetail.created_at)} &bull; {selectedSaleForDetail.cashier?.full_name || 'Kasir'}
                   </span>
                 </div>
                 <StatusBadge

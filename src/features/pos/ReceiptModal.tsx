@@ -50,6 +50,7 @@ export function ReceiptModal({ sale, settings, onClose }: ReceiptModalProps) {
       storeAddress,
       `*================================*`,
       `No. Invoice : *${sale.receipt_number}*`,
+      `Pelanggan   : *${sale.customer_name || 'Pelanggan'}*`,
       `Waktu       : ${formatDateTime(sale.created_at)}`,
       `Kasir Bertugas: ${sale.cashier?.full_name || 'Petugas'}`,
       `Status      : *LUNAS (PAID)*`,
@@ -179,6 +180,10 @@ export function ReceiptModal({ sale, settings, onClose }: ReceiptModalProps) {
             <div className="flex justify-between items-center">
               <span className="text-slate-500 font-medium">No. Invoice:</span>
               <span className="font-mono font-black text-slate-900">{sale.receipt_number}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-slate-500 font-medium">Nama Pembeli:</span>
+              <span className="font-bold text-nyeni-navy">{sale.customer_name || 'Pelanggan'}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-slate-500 font-medium">Waktu Transaksi:</span>
