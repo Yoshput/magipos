@@ -4,6 +4,7 @@ import './globals.css';
 import { AuthProvider } from '@/context/auth-context';
 import { CartProvider } from '@/context/cart-context';
 import { NotificationProvider } from '@/context/notification-context';
+import { PwaProvider } from '@/components/pwa/PwaProvider';
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ['latin'],
@@ -17,8 +18,13 @@ export const metadata: Metadata = {
   description: 'Sistem Kasir dan Operasional Bisnis Dessert Mango Nyeni',
   manifest: '/manifest.json',
   icons: {
-    icon: '/assets/logo-mango-nyeni.png',
-    apple: '/assets/logo-mango-nyeni.png',
+    icon: '/assets/icon-192.png',
+    apple: '/apple-touch-icon.png',
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'NyeniPOS',
   },
 };
 
@@ -40,7 +46,9 @@ export default function RootLayout({
       <body className={plusJakartaSans.className}>
         <AuthProvider>
           <NotificationProvider>
-            <CartProvider>{children}</CartProvider>
+            <CartProvider>
+              <PwaProvider>{children}</PwaProvider>
+            </CartProvider>
           </NotificationProvider>
         </AuthProvider>
       </body>

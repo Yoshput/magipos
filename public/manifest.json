@@ -1,21 +1,55 @@
 {
-  "name": "NyeniPOS — Mango Nyeni",
+  "id": "/",
+  "name": "NyeniPOS — Mango Nyeni POS & Operasional",
   "short_name": "NyeniPOS",
-  "description": "Sistem Kasir & Operasional Mango Nyeni",
-  "start_url": "/",
+  "description": "Sistem Kasir & Operasional Resmi Dessert Cup Mango Nyeni",
+  "start_url": "/pos",
+  "scope": "/",
   "display": "standalone",
+  "orientation": "any",
   "background_color": "#F5F7FB",
   "theme_color": "#142A72",
+  "categories": ["food", "business", "productivity"],
   "icons": [
     {
-      "src": "/assets/logo-mango-nyeni.png",
+      "src": "/assets/icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
       "src": "/assets/logo-mango-nyeni.png",
       "sizes": "512x512",
       "type": "image/png"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Kasir POS",
+      "short_name": "POS",
+      "description": "Buka kasir transaksi baru",
+      "url": "/pos",
+      "icons": [{ "src": "/assets/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Belanja Bahan (Restock)",
+      "short_name": "Restock",
+      "description": "Catat belanja buah & bahan baku",
+      "url": "/inventory/purchases",
+      "icons": [{ "src": "/assets/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Dashboard Eksekutif",
+      "short_name": "Dashboard",
+      "description": "Ringkasan penjualan harian",
+      "url": "/dashboard",
+      "icons": [{ "src": "/assets/icon-192.png", "sizes": "192x192" }]
     }
   ]
 }
