@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { useCart } from '@/context/cart-context';
 import { useAuth } from '@/context/auth-context';
 import { useNotification } from '@/context/notification-context';
@@ -18,6 +19,9 @@ import {
   Loader2,
   Smartphone,
   ShieldCheck,
+  Copy,
+  Check,
+  Maximize2,
 } from 'lucide-react';
 
 interface CheckoutModalProps {
@@ -36,6 +40,8 @@ export function CheckoutModal({ isOpen, onClose, onSuccess }: CheckoutModalProps
   const [qrisReference, setQrisReference] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [copiedBank, setCopiedBank] = useState(false);
+  const [isQrisZoomed, setIsQrisZoomed] = useState(false);
   const [idempotencyKey, setIdempotencyKey] = useState('');
 
   // Generate unique idempotency key when opening modal
@@ -272,28 +278,49 @@ export function CheckoutModal({ isOpen, onClose, onSuccess }: CheckoutModalProps
               <div className="flex items-center justify-between pb-2 border-b border-slate-200 text-xs">
                 <span className="font-extrabold text-nyeni-navy flex items-center gap-1.5">
                   <Smartphone className="w-4 h-4 text-emerald-600" />
-                  <span>GoPay Merchant / QRIS</span>
+                  <span>GoPay Merchant / QRIS Standar</span>
                 </span>
                 <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">
                   Siap Scan
                 </span>
               </div>
 
-              {/* QR Code Container */}
-              <div className="w-36 h-36 mx-auto bg-white border border-slate-300 rounded-2xl p-2.5 flex flex-col items-center justify-center shadow-xs">
-                <QrCode className="w-24 h-24 text-slate-800" />
-                <span className="text-[9px] font-black text-slate-500 mt-1 uppercase tracking-wider">
-                  QRIS GO-PAY / BCA / SHOPEE
-                </span>
+              {/* Official Gopay Merchant QRIS Poster Image */}
+              <div className="relative group mx-auto w-48 aspect-[3/4] bg-white rounded-2xl border-2 border-sky-400/40 p-2 shadow-sm overflow-hidden flex flex-col items-center justify-center">
+                <Image
+                  src="/assets/qris-gopay-merchant.webp"
+                  alt="QRIS GoPay Merchant Magi Nyeni Store"
+                  fill
+                  sizes="192px"
+                  className="object-contain p-1"
+                  priority
+                />
+                <button
+                  type="button"
+                  onClick={() => setIsQrisZoomed(true)}
+                  className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-bold gap-1 rounded-2xl"
+                >
+                  <Maximize2 className="w-4 h-4" />
+                  <span>Perbesar QR</span>
+                </button>
               </div>
 
-              <p className="text-xs font-bold text-foreground">
-                Arahkan pelanggan scan QRIS atau stiker QR GoPay di meja kasir.
-              </p>
-              <p className="text-xs text-muted">
-                Nominal Tagihan:{' '}
+              <div className="space-y-0.5">
+                <p className="text-xs font-black text-nyeni-navy uppercase tracking-wide">
+                  MAGI NYENI STORE, MAKANAN
+                </p>
+                <p className="text-[11px] font-mono text-slate-500">
+                  NMID: ID1026485705432 &bull; Terminal A01
+                </p>
+                <p className="text-[11px] text-slate-600 pt-1 font-medium">
+                  Scan dengan GoPay, BCA, Mandiri, BRI, BNI, ShopeePay & aplikasi QRIS lainnya.
+                </p>
+              </div>
+
+              <div className="p-2 rounded-xl bg-white border border-slate-200 flex items-center justify-between text-xs">
+                <span className="text-muted font-medium">Total Nominal Tagihan:</span>
                 <span className="font-extrabold text-nyeni-navy text-sm">{formatRupiah(total)}</span>
-              </p>
+              </div>
 
               {/* GoBiz / GoPay Reference Input */}
               <div className="text-left pt-2 border-t border-slate-200/80">
@@ -315,15 +342,77 @@ export function CheckoutModal({ isOpen, onClose, onSuccess }: CheckoutModalProps
           )}
 
           {paymentMethod === 'transfer' && (
-            <div className="p-4 bg-slate-50 rounded-ios border border-slate-200 space-y-2 text-xs">
-              <p className="font-bold text-foreground">Rekening Tujuan Operasional:</p>
-              <div className="p-2.5 bg-white rounded-lg border border-border">
-                <p className="font-bold text-nyeni-navy">BCA: 8820-9912-34</p>
-                <p className="text-slate-600 text-[11px]">a/n Mango Nyeni Official</p>
+            <div className="p-4 bg-slate-50 rounded-ios-card border border-slate-200 space-y-3 text-xs">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-200">
+                <span className="font-bold text-foreground flex items-center gap-1.5">
+                  <Building2 className="w-4 h-4 text-nyeni-blue" />
+                  <span>Rekening Transfer Kasir Resmi</span>
+                </span>
+                <span className="text-[10px] bg-blue-100 text-nyeni-blue font-bold px-2 py-0.5 rounded-full">
+                  BCA Digital
+                </span>
               </div>
-              <p className="text-[11px] text-muted italic">
-                Pastikan mutasi transfer telah masuk sebelum mengonfirmasi transaksi.
-              </p>
+
+              <div className="p-3.5 bg-white rounded-xl border border-slate-200 shadow-2xs space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                    Bank Tujuan
+                  </span>
+                  <span className="font-black text-nyeni-navy text-sm">Blu by BCA Digital</span>
+                </div>
+
+                <div className="flex items-center justify-between pt-1">
+                  <div>
+                    <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
+                      Nomor Rekening
+                    </span>
+                    <span className="text-base font-black font-mono text-nyeni-blue tracking-wide">
+                      000596641881
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (navigator.clipboard) {
+                        navigator.clipboard.writeText('000596641881');
+                        setCopiedBank(true);
+                        setTimeout(() => setCopiedBank(false), 2000);
+                        notify({
+                          type: 'success',
+                          title: 'Nomor Rekening Tersalin',
+                          message: '000596641881 berhasil disalin ke clipboard.',
+                        });
+                      }
+                    }}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 ${
+                      copiedBank
+                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-300'
+                        : 'bg-nyeni-blue-soft text-nyeni-blue hover:bg-nyeni-blue hover:text-white'
+                    }`}
+                  >
+                    {copiedBank ? (
+                      <>
+                        <Check className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>Tersalin!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3.5 h-3.5" />
+                        <span>Salin Rek</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                <div className="pt-1 border-t border-slate-100 flex items-center justify-between text-[11px]">
+                  <span className="text-slate-500 font-medium">Atas Nama:</span>
+                  <span className="font-bold text-foreground">Yossika Putra Erlangga</span>
+                </div>
+              </div>
+
+              <div className="p-2.5 rounded-xl bg-amber-50/80 border border-amber-200 text-amber-900 text-[11px] font-medium leading-relaxed">
+                Pastikan nama pengirim dan bukti mutasi berhasil tampil di m-Banking sebelum menekan tombol konfirmasi bayar.
+              </div>
             </div>
           )}
 
@@ -366,6 +455,41 @@ export function CheckoutModal({ isOpen, onClose, onSuccess }: CheckoutModalProps
           </button>
         </div>
       </div>
+
+      {/* QRIS Fullscreen Zoom Modal */}
+      {isQrisZoomed && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in">
+          <div className="relative max-w-sm w-full bg-white rounded-3xl p-4 shadow-2xl border border-white/40 flex flex-col items-center">
+            <button
+              type="button"
+              onClick={() => setIsQrisZoomed(false)}
+              className="absolute top-3 right-3 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition-colors z-10"
+            >
+              <X className="w-4 h-4" />
+            </button>
+            <div className="w-full aspect-[3/4] relative rounded-2xl overflow-hidden mt-2">
+              <Image
+                src="/assets/qris-gopay-merchant.webp"
+                alt="QRIS GoPay Merchant Magi Nyeni Store"
+                fill
+                sizes="(max-width: 640px) 90vw, 380px"
+                className="object-contain"
+                priority
+              />
+            </div>
+            <p className="text-xs font-bold text-nyeni-navy mt-3 text-center">
+              Arahkan kamera smartphone ke kode QR di atas
+            </p>
+            <button
+              type="button"
+              onClick={() => setIsQrisZoomed(false)}
+              className="mt-3 w-full py-2.5 rounded-xl bg-nyeni-navy text-white text-xs font-bold"
+            >
+              Tutup Tampilan QRIS
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

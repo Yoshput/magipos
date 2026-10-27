@@ -4,13 +4,12 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/context/auth-context';
-import { localDb } from '@/lib/storage/local-db';
-import { LogoutConfirmModal } from './LogoutConfirmModal';
 import {
   LayoutDashboard,
   Store,
   Receipt,
   Boxes,
+  ShoppingBag,
   MoreHorizontal,
   BarChart3,
   UtensilsCrossed,
@@ -23,9 +22,8 @@ import {
 
 export function MobileBottomNav() {
   const pathname = usePathname();
-  const { profile, isAdmin, signOut } = useAuth();
+  const { profile, isAdmin, openLogoutModal } = useAuth();
   const [isMoreOpen, setIsMoreOpen] = useState(false);
-  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
   const adminTabs = [
     { name: 'Ringkasan', href: '/dashboard', icon: LayoutDashboard },
@@ -42,6 +40,7 @@ export function MobileBottomNav() {
   const mainTabs = isAdmin ? adminTabs : cashierTabs;
 
   const adminMoreTabs = [
+    { name: 'Belanja Bahan (Restock)', href: '/inventory/purchases', icon: ShoppingBag },
     { name: 'Laporan Keuangan', href: '/reports', icon: BarChart3 },
     { name: 'Menu & Resep', href: '/menu', icon: UtensilsCrossed },
     { name: 'Pengeluaran', href: '/expenses', icon: Wallet },
@@ -102,7 +101,7 @@ export function MobileBottomNav() {
                 type="button"
                 onClick={() => {
                   setIsMoreOpen(false);
-                  setIsLogoutModalOpen(true);
+                  openLogoutModal();
                 }}
                 className="w-full flex items-center justify-center gap-2 py-3 rounded-ios bg-rose-50 text-rose-600 font-semibold text-sm hover:bg-rose-100 transition-colors"
               >
@@ -113,18 +112,6 @@ export function MobileBottomNav() {
           </div>
         </div>
       )}
-
-      <LogoutConfirmModal
-        isOpen={isLogoutModalOpen}
-        profile={profile}
-        onClose={() => setIsLogoutModalOpen(false)}
-        onConfirm={(remember) => {
-          if (!remember) {
-            localDb.clearRememberedUser();
-          }
-          signOut();
-        }}
-      />
 
       {/* Sticky Bottom Nav Bar */}
       <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-border px-2 py-1.5 flex items-center justify-around shadow-ios pb-[calc(0.5rem+env(safe-area-inset-bottom))]">

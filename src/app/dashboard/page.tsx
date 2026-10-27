@@ -21,6 +21,7 @@ import {
   ArrowRight,
   Store,
   Lock,
+  ShoppingBag,
 } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -145,13 +146,22 @@ export default function DashboardPage() {
         title="Ringkasan Hari Ini"
         subtitle="Pantau omzet penjualan, transaksi kasir, dan ketersediaan stok bahan secara real-time"
         action={
-          <Link
-            href="/pos"
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-ios bg-nyeni-blue text-white font-bold text-xs sm:text-sm hover:bg-nyeni-blue-hover transition-colors shadow-sm"
-          >
-            <Store className="w-4 h-4" />
-            <span>Buka Kasir (POS)</span>
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/inventory/purchases"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-ios bg-white border border-border text-foreground hover:bg-slate-50 font-bold text-xs shadow-xs transition-colors"
+            >
+              <ShoppingBag className="w-4 h-4 text-nyeni-blue" />
+              <span>Belanja Bahan</span>
+            </Link>
+            <Link
+              href="/pos"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-ios bg-nyeni-blue text-white font-bold text-xs hover:bg-nyeni-blue-hover transition-colors shadow-sm"
+            >
+              <Store className="w-4 h-4" />
+              <span>Buka Kasir (POS)</span>
+            </Link>
+          </div>
         }
       />
 

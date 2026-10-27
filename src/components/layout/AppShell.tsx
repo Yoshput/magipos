@@ -1,14 +1,39 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { DesktopSidebar } from './DesktopSidebar';
 import { MobileBottomNav } from './MobileBottomNav';
+import { LogoutConfirmModal } from './LogoutConfirmModal';
+import { FeatureTourModal } from '@/components/guide/FeatureTourModal';
 import { OfflineBanner } from '@/components/ui/ConnectionStatus';
 import { useAuth } from '@/context/auth-context';
+import { localDb } from '@/lib/storage/local-db';
 import { LoadingSkeleton } from '@/components/ui/LoadingSkeleton';
+import { HelpCircle } from 'lucide-react';
 
 export function AppShell({ children }: { children: React.ReactNode }) {
-  const { isLoading, isConfigured } = useAuth();
+  const { isLoading, isConfigured, isLogoutModalOpen, closeLogoutModal, signOut, profile } =
+    useAuth();
+  const [isTourOpen, setIsTourOpen] = useState(false);
+
+  useEffect(() => {
+    // Check if first-time user
+    if (typeof window !== 'undefined') {
+      const viewed = window.localStorage.getItem('nyeni_tour_viewed');
+      if (!viewed) {
+        // Auto open tour smoothly on first visit
+        const timer = setTimeout(() => setIsTourOpen(true), 800);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    // Listen for custom trigger to open tour
+    const handleOpenTour = () => setIsTourOpen(true);
+    window.addEventListener('nyeni_open_tour', handleOpenTour);
+    return () => window.removeEventListener('nyeni_open_tour', handleOpenTour);
+  }, []);
 
   if (isLoading) {
     return (
@@ -37,6 +62,38 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </div>
 
       <MobileBottomNav />
+
+      {/* Floating Tour Guide Trigger Button */}
+      <button
+        type="button"
+        onClick={() => setIsTourOpen(true)}
+        className="fixed bottom-20 lg:bottom-6 right-5 z-40 bg-white/95 hover:bg-white text-nyeni-navy border border-slate-200/90 shadow-ios-float px-3.5 py-2 rounded-full text-xs font-bold flex items-center gap-2 backdrop-blur-md transition-all hover:scale-105 active:scale-95"
+        title="Buka Panduan Fitur Sistem"
+      >
+        <span className="w-2 h-2 rounded-full bg-nyeni-blue animate-pulse" />
+        <HelpCircle className="w-4 h-4 text-nyeni-blue" />
+        <span className="hidden sm:inline">Panduan Fitur</span>
+      </button>
+
+      {/* Interactive Step-by-Step Feature Tour */}
+      <FeatureTourModal
+        isOpen={isTourOpen}
+        onClose={() => setIsTourOpen(false)}
+      />
+
+      {/* Global Logout Modal: Single instance, immune to stacking contexts */}
+      <LogoutConfirmModal
+        isOpen={isLogoutModalOpen}
+        profile={profile}
+        onClose={closeLogoutModal}
+        onConfirm={(remember) => {
+          if (!remember) {
+            localDb.clearRememberedUser();
+          }
+          closeLogoutModal();
+          signOut();
+        }}
+      />
     </div>
   );
 }

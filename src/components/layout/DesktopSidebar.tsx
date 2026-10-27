@@ -1,30 +1,27 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/context/auth-context';
-import { localDb } from '@/lib/storage/local-db';
-import { LogoutConfirmModal } from './LogoutConfirmModal';
 import {
   LayoutDashboard,
   Store,
   Receipt,
   Boxes,
+  ShoppingBag,
   BarChart3,
   UtensilsCrossed,
   Wallet,
   Users,
   Settings,
   LogOut,
-  ShieldAlert,
 } from 'lucide-react';
 
 export function DesktopSidebar() {
   const pathname = usePathname();
-  const { profile, isAdmin, signOut } = useAuth();
-  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const { profile, isAdmin, openLogoutModal } = useAuth();
 
   const cashierNav = [
     { name: 'Kasir (POS)', href: '/pos', icon: Store },
@@ -36,6 +33,7 @@ export function DesktopSidebar() {
     { name: 'Kasir (POS)', href: '/pos', icon: Store },
     { name: 'Transaksi & Void', href: '/transactions', icon: Receipt },
     { name: 'Stok Bahan Baku', href: '/inventory', icon: Boxes },
+    { name: 'Belanja Bahan (Restock)', href: '/inventory/purchases', icon: ShoppingBag },
   ];
 
   const adminNav = [
@@ -145,26 +143,14 @@ export function DesktopSidebar() {
           </div>
           <button
             type="button"
-            onClick={() => setIsLogoutModalOpen(true)}
+            onClick={openLogoutModal}
             title="Keluar Akun"
-            className="p-2 text-muted hover:text-rose-600 hover:bg-rose-50 rounded-ios transition-colors"
+            className="p-2 text-muted hover:text-rose-600 hover:bg-rose-50 rounded-ios transition-colors cursor-pointer"
           >
             <LogOut className="w-4 h-4" />
           </button>
         </div>
       </div>
-
-      <LogoutConfirmModal
-        isOpen={isLogoutModalOpen}
-        profile={profile}
-        onClose={() => setIsLogoutModalOpen(false)}
-        onConfirm={(remember) => {
-          if (!remember) {
-            localDb.clearRememberedUser();
-          }
-          signOut();
-        }}
-      />
     </aside>
   );
 }

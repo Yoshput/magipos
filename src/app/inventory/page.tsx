@@ -218,6 +218,30 @@ export default function InventoryPage() {
 
       {activeTab === 'stock' ? (
         <div className="space-y-4">
+          {/* Quick Belanja Bahan Callout Banner */}
+          <div className="p-4 sm:p-5 rounded-ios-card bg-gradient-to-r from-nyeni-blue-soft via-sky-50 to-white border border-nyeni-blue/30 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-nyeni-blue text-white flex items-center justify-center shrink-0 shadow-xs">
+                <ShoppingBag className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-sm font-extrabold text-nyeni-navy">
+                  Habis Belanja Buah & Bahan Stok?
+                </h3>
+                <p className="text-xs text-slate-600 mt-0.5 leading-relaxed">
+                  Catat nota belanja buah mangga, buah naga, stroberi, cup, susu, dan bahan lainnya di menu <strong>Belanja Bahan (Restock)</strong> agar stok bertambah dan HPP terhitung otomatis.
+                </p>
+              </div>
+            </div>
+            <Link
+              href="/inventory/purchases"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-ios bg-nyeni-blue hover:bg-nyeni-blue-hover text-white text-xs font-bold transition-all shadow-sm shrink-0"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Catat Belanja Bahan</span>
+            </Link>
+          </div>
+
           {/* Search bar */}
           <div className="bg-white p-3.5 rounded-ios-card border border-border shadow-ios flex items-center">
             <div className="relative flex-1">

@@ -12,6 +12,9 @@ interface AuthContextType {
   isAdmin: boolean;
   isCashier: boolean;
   isConfigured: boolean;
+  isLogoutModalOpen: boolean;
+  openLogoutModal: () => void;
+  closeLogoutModal: () => void;
   login: (identifier: string, pass: string) => boolean;
   signOut: () => Promise<void>;
   refreshProfile: () => void;
@@ -24,6 +27,9 @@ const AuthContext = createContext<AuthContextType>({
   isAdmin: false,
   isCashier: false,
   isConfigured: true,
+  isLogoutModalOpen: false,
+  openLogoutModal: () => {},
+  closeLogoutModal: () => {},
   login: () => false,
   signOut: async () => {},
   refreshProfile: () => {},
@@ -32,7 +38,16 @@ const AuthContext = createContext<AuthContextType>({
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const router = useRouter();
+
+  const openLogoutModal = useCallback(() => {
+    setIsLogoutModalOpen(true);
+  }, []);
+
+  const closeLogoutModal = useCallback(() => {
+    setIsLogoutModalOpen(false);
+  }, []);
 
   const loadSession = useCallback(() => {
     try {
@@ -85,6 +100,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isAdmin,
         isCashier,
         isConfigured: true,
+        isLogoutModalOpen,
+        openLogoutModal,
+        closeLogoutModal,
         login,
         signOut,
         refreshProfile,

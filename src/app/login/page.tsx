@@ -37,6 +37,11 @@ export default function LoginPage() {
   const [remembered, setRemembered] = useState<RememberedAccount | null>(null);
   const [showSwitchForm, setShowSwitchForm] = useState(false);
   const [isAutoLoggingIn, setIsAutoLoggingIn] = useState(false);
+  const [loginSuccessInfo, setLoginSuccessInfo] = useState<{
+    name: string;
+    role: string;
+    targetRoute: string;
+  } | null>(null);
 
   useEffect(() => {
     // Check if there is a remembered user in local storage
@@ -61,6 +66,15 @@ export default function LoginPage() {
 
     const clean = userToLogin.toLowerCase().trim();
     const isAdminUser = clean === 'admin' || clean.startsWith('admin@');
+    const targetUser = localDb.getSessionUser();
+    const displayName =
+      targetUser?.full_name || (isAdminUser ? 'Admin Owner' : 'Kasir Utama');
+
+    setLoginSuccessInfo({
+      name: displayName,
+      role: isAdminUser ? 'Admin' : 'Kasir',
+      targetRoute: isAdminUser ? '/dashboard' : '/pos',
+    });
 
     notify({
       type: 'success',
@@ -76,7 +90,7 @@ export default function LoginPage() {
       } else {
         router.push('/pos');
       }
-    }, 250);
+    }, 650);
   };
 
   const handleFormSubmit = (e: React.FormEvent) => {
@@ -114,28 +128,63 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen relative flex flex-col justify-center items-center p-4 selection:bg-nyeni-blue selection:text-white select-none">
-      {/* Real Blue Sky Clouds Background */}
+      {/* Real Blue Sky Clouds Background (Fast 60fps) */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
         <Image
-          src="/assets/real-clouds-bg-lg.webp"
+          src="/assets/real-clouds-bg-fast.webp"
           alt="Latar Belakang Langit Biru Alami"
           fill
           priority
-          className="object-cover object-center scale-105"
+          sizes="100vw"
+          className="object-cover object-center"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-white/70 via-sky-50/60 to-white/85 backdrop-blur-[1px]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-white/70 via-sky-50/60 to-white/85" />
       </div>
 
       {/* Back to Landing Page link */}
       <div className="relative z-10 w-full max-w-md mb-3">
         <Link
           href="/"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-700 hover:text-nyeni-navy bg-white/80 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/80 shadow-xs transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-700 hover:text-nyeni-navy bg-white/90 px-3.5 py-1.5 rounded-full border border-white/80 shadow-xs transition-colors hover:shadow-sm"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>Kembali ke Halaman Depan</span>
         </Link>
       </div>
+
+      {/* Interactive Login Success Pop-up Animation */}
+      <AnimatePresence>
+        {loginSuccessInfo && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.85, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: -20 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 360 }}
+              className="w-full max-w-sm bg-white rounded-[28px] p-6 text-center border border-slate-200/90 shadow-[0_25px_60px_rgba(20,42,114,0.25)] flex flex-col items-center"
+            >
+              <div className="w-16 h-16 rounded-3xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600 mb-4 shadow-sm">
+                <CheckCircle2 className="w-9 h-9 stroke-[2.2]" />
+              </div>
+              <span className="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-black uppercase tracking-wider mb-2">
+                Login Berhasil!
+              </span>
+              <h2 className="text-xl font-black text-nyeni-navy">
+                Selamat Datang, {loginSuccessInfo.name}
+              </h2>
+              <p className="text-xs text-slate-600 mt-1.5 font-medium leading-relaxed">
+                {loginSuccessInfo.role === 'Admin'
+                  ? 'Menyiapkan portal ringkasan operasional toko...'
+                  : 'Sesi kasir aktif. Menyiapkan katalog POS...'}
+              </p>
+              <div className="mt-4 flex items-center gap-2 text-xs font-bold text-nyeni-blue">
+                <Loader2 className="w-4 h-4 animate-spin text-nyeni-blue" />
+                <span>Membuka halaman {loginSuccessInfo.role === 'Admin' ? 'Dashboard' : 'Kasir POS'}...</span>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* Main Glassmorphic Card */}
       <motion.div
