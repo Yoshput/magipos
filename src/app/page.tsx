@@ -52,7 +52,7 @@ export default function LandingPage() {
       tagline: 'Buah Naga Merah Segar & Kuah Creamy Spesial',
       description:
         'Perpaduan istimewa buah naga merah segar kaya antioksidan dengan sagu mutiara lembut dan kuah kental gurih manis yang lumer di lidah, memberikan sensasi kesegaran tropis maksimal.',
-      image: '/assets/naga-sago-splash-promo.webp',
+      image: '/assets/dragon-sago-only.webp',
       variants: [
         { name: '200 ml', price: 13000 },
         { name: '300 ml', price: 17000 },
@@ -69,7 +69,7 @@ export default function LandingPage() {
       tagline: 'Stroberi Segar Asam Manis Berpadu Susu Mewah',
       description:
         'Kombinasi stroberi segar pilihan dengan rasa asam manis seimbang, sagu mutiara, dan kuah susu kental manis gurih yang menyatu sempurna. Sangat cocok dinikmati dingin saat cuaca terik.',
-      image: '/assets/strawberry-sago-summer-delight.webp',
+      image: '/assets/strawberry-sago-only.webp',
       variants: [
         { name: '200 ml', price: 13000 },
         { name: '300 ml', price: 17000 },
@@ -89,21 +89,22 @@ export default function LandingPage() {
       {/* ------------------------------------------------------------- */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
         <Image
-          src="/assets/real-clouds-bg-lg.webp"
+          src="/assets/real-clouds-bg-fast.webp"
           alt="Real Blue Sky with White Clouds"
           fill
           priority
-          className="object-cover object-top scale-105"
+          sizes="100vw"
+          className="object-cover object-top"
         />
-        {/* Soft, clean atmospheric glassmorphic overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-white/70 via-sky-50/60 to-white/90 backdrop-blur-[1px]" />
+        {/* Soft, clean atmospheric glassmorphic overlay without expensive blur filter */}
+        <div className="absolute inset-0 bg-gradient-to-b from-white/70 via-sky-50/60 to-white/90" />
       </div>
 
       {/* ------------------------------------------------------------- */}
       {/* STICKY GLASSMORPHIC NAVBAR (iOS Style)                        */}
       {/* ------------------------------------------------------------- */}
       <header className="sticky top-0 z-40 px-4 sm:px-6 py-3">
-        <div className="max-w-6xl mx-auto backdrop-blur-2xl bg-white/75 border border-white/60 rounded-full px-4 sm:px-6 py-2.5 shadow-[0_8px_30px_rgb(0,0,0,0.06)] flex items-center justify-between">
+        <div className="max-w-6xl mx-auto backdrop-blur-md bg-white/85 border border-white/80 rounded-full px-4 sm:px-6 py-2.5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex items-center justify-between">
           {/* Logo & Brand */}
           <Link href="/" className="flex items-center gap-3 group">
             <div className="w-10 h-10 rounded-full bg-white shadow-xs p-1 border border-nyeni-blue/20 flex items-center justify-center overflow-hidden group-hover:scale-105 transition-transform">
@@ -290,7 +291,7 @@ export default function LandingPage() {
           </div>
 
           {/* Active Product Showcase Card */}
-          <div className="backdrop-blur-xl bg-white/80 border border-white/70 rounded-[28px] p-6 sm:p-10 shadow-[0_20px_60px_rgba(20,42,114,0.08)] grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          <div className="backdrop-blur-md bg-white/90 border border-white/80 rounded-[28px] p-6 sm:p-10 shadow-[0_20px_50px_rgba(20,42,114,0.06)] grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             {/* Left: Product Image with Zoom Feature */}
             <div className="lg:col-span-5 flex flex-col items-center">
               <div className="w-full max-w-[340px] aspect-square rounded-[24px] bg-gradient-to-b from-sky-50 to-white border border-slate-100 p-4 shadow-sm relative overflow-hidden flex items-center justify-center">
@@ -380,7 +381,7 @@ export default function LandingPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Card 1 */}
-            <div className="backdrop-blur-xl bg-white/80 border border-white/70 rounded-[24px] p-6 shadow-sm hover:shadow-md transition-shadow">
+            <div className="backdrop-blur-sm bg-white/90 border border-white/80 rounded-[24px] p-6 shadow-xs hover:shadow-md transition-shadow">
               <div className="w-12 h-12 rounded-2xl bg-nyeni-blue-soft text-nyeni-blue flex items-center justify-center mb-4">
                 <Store className="w-6 h-6" />
               </div>
@@ -392,7 +393,7 @@ export default function LandingPage() {
             </div>
 
             {/* Card 2 */}
-            <div className="backdrop-blur-xl bg-white/80 border border-white/70 rounded-[24px] p-6 shadow-sm hover:shadow-md transition-shadow">
+            <div className="backdrop-blur-sm bg-white/90 border border-white/80 rounded-[24px] p-6 shadow-xs hover:shadow-md transition-shadow">
               <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mb-4">
                 <Boxes className="w-6 h-6" />
               </div>
@@ -404,7 +405,7 @@ export default function LandingPage() {
             </div>
 
             {/* Card 3 */}
-            <div className="backdrop-blur-xl bg-white/80 border border-white/70 rounded-[24px] p-6 shadow-sm hover:shadow-md transition-shadow">
+            <div className="backdrop-blur-sm bg-white/90 border border-white/80 rounded-[24px] p-6 shadow-xs hover:shadow-md transition-shadow">
               <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-4">
                 <Receipt className="w-6 h-6" />
               </div>
@@ -421,7 +422,7 @@ export default function LandingPage() {
         {/* LAPORAN & EKSPOR EXCEL / PDF                                  */}
         {/* ------------------------------------------------------------- */}
         <section id="laporan" className="px-4 sm:px-6 py-12 max-w-6xl mx-auto w-full">
-          <div className="backdrop-blur-xl bg-gradient-to-r from-nyeni-navy to-[#18348a] rounded-[28px] p-8 sm:p-12 text-white shadow-xl grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          <div className="bg-gradient-to-r from-nyeni-navy to-[#18348a] rounded-[28px] p-8 sm:p-12 text-white shadow-xl grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             <div className="lg:col-span-7">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-white text-xs font-bold mb-3 border border-white/10">
                 <FileSpreadsheet className="w-3.5 h-3.5" />

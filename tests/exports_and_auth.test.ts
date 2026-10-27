@@ -34,6 +34,12 @@ describe('Responsive Image & Auth Seed Tests', () => {
     const mangoSm = getResponsiveImagePath('/assets/mango-sago-splash-stack.png', 'sm');
     expect(mangoSm).toBe('/assets/mango-sago-splash-stack-sm.webp');
 
+    const dragonLg = getResponsiveImagePath('/assets/dragon-sago-only.png', 'lg');
+    expect(dragonLg).toBe('/assets/dragon-sago-only-lg.webp');
+
+    const strawbSm = getResponsiveImagePath('/assets/strawberry-sago-only.png', 'sm');
+    expect(strawbSm).toBe('/assets/strawberry-sago-only-sm.webp');
+
     const nagaMd = getResponsiveImagePath('/assets/naga-sago-splash-promo.png', 'md');
     expect(nagaMd).toBe('/assets/naga-sago-splash-promo-md.webp');
 

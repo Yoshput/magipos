@@ -95,7 +95,7 @@ export const DEFAULT_DATABASE: DatabaseSchema = {
       name: 'Dragon Sago',
       description: 'Dessert cup segar dengan perpaduan buah naga merah pilihan, sagu mutiara, dan kuah creamy spesial Mango Nyeni.',
       category: 'Dessert Cup',
-      image_path: '/assets/naga-sago-splash-promo.webp',
+      image_path: '/assets/dragon-sago-only.webp',
       is_active: true,
       sort_order: 1,
       created_at: '2026-10-26T00:00:00.000Z',
@@ -117,7 +117,7 @@ export const DEFAULT_DATABASE: DatabaseSchema = {
       name: 'Strawberry Sago',
       description: 'Dessert cup sensasi asam manis stroberi segar dengan sagu mutiara kenyal dan kuah susu kental manis gurih.',
       category: 'Dessert Cup',
-      image_path: '/assets/strawberry-sago-summer-delight.webp',
+      image_path: '/assets/strawberry-sago-only.webp',
       is_active: true,
       sort_order: 3,
       created_at: '2026-10-26T00:00:00.000Z',
@@ -368,16 +368,16 @@ class LocalStoreManager {
         modified = true;
       }
 
-      // Update image paths to WebP if still on PNG
+      // Update image paths to isolated WebP product objects
       for (const p of db.products || []) {
-        if (p.id === 'prod_dragon_sago' && (!p.image_path || p.image_path.includes('.png'))) {
-          p.image_path = '/assets/naga-sago-splash-promo.webp';
+        if (p.id === 'prod_dragon_sago' && (!p.image_path || p.image_path.includes('naga-sago-splash-promo') || p.image_path.includes('.png'))) {
+          p.image_path = '/assets/dragon-sago-only.webp';
           modified = true;
         } else if (p.id === 'prod_mango_sago' && (!p.image_path || p.image_path.includes('.png'))) {
           p.image_path = '/assets/mango-sago-splash-stack.webp';
           modified = true;
-        } else if (p.id === 'prod_strawberry_sago' && (!p.image_path || p.image_path.includes('.png'))) {
-          p.image_path = '/assets/strawberry-sago-summer-delight.webp';
+        } else if (p.id === 'prod_strawberry_sago' && (!p.image_path || p.image_path.includes('strawberry-sago-summer-delight') || p.image_path.includes('.png'))) {
+          p.image_path = '/assets/strawberry-sago-only.webp';
           modified = true;
         }
       }

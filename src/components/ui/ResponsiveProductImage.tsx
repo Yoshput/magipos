@@ -32,6 +32,8 @@ export function getResponsiveImagePath(
   const knownAssets: Record<string, string> = {
     '/assets/mango-sago-only': `/assets/mango-sago-only-${tier}.webp`,
     '/assets/mango-sago-splash-stack': `/assets/mango-sago-splash-stack-${tier}.webp`,
+    '/assets/dragon-sago-only': `/assets/dragon-sago-only-${tier}.webp`,
+    '/assets/strawberry-sago-only': `/assets/strawberry-sago-only-${tier}.webp`,
     '/assets/naga-sago-splash-promo': `/assets/naga-sago-splash-promo-${tier}.webp`,
     '/assets/Naga Sago Splash Promo': `/assets/naga-sago-splash-promo-${tier}.webp`,
     '/assets/strawberry-sago-summer-delight': `/assets/strawberry-sago-summer-delight-${tier}.webp`,

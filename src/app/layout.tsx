@@ -1,8 +1,16 @@
 import type { Metadata, Viewport } from 'next';
+import { Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/context/auth-context';
 import { CartProvider } from '@/context/cart-context';
 import { NotificationProvider } from '@/context/notification-context';
+
+const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-pjs',
+  weight: ['400', '500', '600', '700', '800'],
+});
 
 export const metadata: Metadata = {
   title: 'NyeniPOS — Mango Nyeni POS & Operational System',
@@ -28,8 +36,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="id">
-      <body>
+    <html lang="id" className={plusJakartaSans.variable}>
+      <body className={plusJakartaSans.className}>
         <AuthProvider>
           <NotificationProvider>
             <CartProvider>{children}</CartProvider>
