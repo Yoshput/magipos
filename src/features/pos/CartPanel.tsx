@@ -140,8 +140,14 @@ export function CartPanel({ onCheckout, onClose, className = '' }: CartPanelProp
                 <div className="mt-3 pt-2 border-t border-slate-200/60 flex items-center justify-between">
                   <div className="flex items-center border border-slate-200 rounded-lg bg-white overflow-hidden shadow-2xs">
                     <button
-                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                      className="w-7 h-7 flex items-center justify-center text-slate-600 hover:bg-slate-100 transition-colors"
+                      onClick={() => {
+                        if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+                          try { navigator.vibrate(15); } catch {}
+                        }
+                        updateQuantity(item.id, item.quantity - 1);
+                      }}
+                      className="w-8 h-8 flex items-center justify-center text-slate-600 hover:bg-slate-100 active:bg-slate-200 transition-colors"
+                      aria-label="Kurangi kuantitas"
                     >
                       <Minus className="w-3.5 h-3.5" />
                     </button>
@@ -149,8 +155,14 @@ export function CartPanel({ onCheckout, onClose, className = '' }: CartPanelProp
                       {item.quantity}
                     </span>
                     <button
-                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                      className="w-7 h-7 flex items-center justify-center text-slate-600 hover:bg-slate-100 transition-colors"
+                      onClick={() => {
+                        if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+                          try { navigator.vibrate(15); } catch {}
+                        }
+                        updateQuantity(item.id, item.quantity + 1);
+                      }}
+                      className="w-8 h-8 flex items-center justify-center text-slate-600 hover:bg-slate-100 active:bg-slate-200 transition-colors"
+                      aria-label="Tambah kuantitas"
                     >
                       <Plus className="w-3.5 h-3.5" />
                     </button>
@@ -168,7 +180,7 @@ export function CartPanel({ onCheckout, onClose, className = '' }: CartPanelProp
 
       {/* Footer Calculation & Checkout */}
       {items.length > 0 && (
-        <div className="p-4 sm:p-5 border-t border-border bg-slate-50/70 space-y-3">
+        <div className="p-4 sm:p-5 border-t border-border bg-slate-50/70 space-y-3 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))]">
           {/* Subtotal */}
           <div className="flex justify-between text-xs text-muted font-medium">
             <span>Subtotal</span>
@@ -207,9 +219,18 @@ export function CartPanel({ onCheckout, onClose, className = '' }: CartPanelProp
             </div>
 
             <button
-              onClick={onCheckout}
+              onClick={() => {
+                if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+                  try {
+                    navigator.vibrate(30);
+                  } catch {
+                    // Ignore devices that block vibration
+                  }
+                }
+                onCheckout();
+              }}
               disabled={items.length === 0}
-              className="px-6 py-3.5 min-h-[48px] rounded-ios bg-nyeni-blue text-white font-bold text-sm hover:bg-nyeni-blue-hover transition-all shadow-md active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none flex items-center gap-2"
+              className="px-6 py-3.5 min-h-[48px] rounded-ios bg-nyeni-blue text-white font-bold text-sm hover:bg-nyeni-blue-hover transition-all shadow-md active:scale-[0.96] disabled:opacity-50 disabled:pointer-events-none flex items-center gap-2"
             >
               <span>Bayar</span>
               <ArrowRight className="w-4 h-4 stroke-[2.5]" />

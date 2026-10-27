@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/context/auth-context';
+import { useCart } from '@/context/cart-context';
 import {
   LayoutDashboard,
   Store,
@@ -16,6 +17,7 @@ import {
   Wallet,
   Users,
   Settings,
+  HelpCircle,
   LogOut,
   X,
 } from 'lucide-react';
@@ -23,6 +25,7 @@ import {
 export function MobileBottomNav() {
   const pathname = usePathname();
   const { profile, isAdmin, openLogoutModal } = useAuth();
+  const { totalCups } = useCart();
   const [isMoreOpen, setIsMoreOpen] = useState(false);
 
   const adminTabs = [
@@ -96,7 +99,21 @@ export function MobileBottomNav() {
               </div>
             )}
 
-            <div className="pt-3 border-t border-slate-100">
+            <div className="pt-3 border-t border-slate-100 space-y-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsMoreOpen(false);
+                  if (typeof window !== 'undefined') {
+                    window.dispatchEvent(new CustomEvent('nyeni_open_tour'));
+                  }
+                }}
+                className="w-full flex items-center justify-center gap-2 py-3 rounded-ios bg-nyeni-blue-soft text-nyeni-blue font-semibold text-sm hover:bg-nyeni-blue/15 transition-colors"
+              >
+                <HelpCircle className="w-4 h-4 text-nyeni-blue" />
+                <span>Panduan Fitur Aplikasi</span>
+              </button>
+
               <button
                 type="button"
                 onClick={() => {
@@ -118,6 +135,8 @@ export function MobileBottomNav() {
         {mainTabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = pathname === tab.href || (tab.href !== '/dashboard' && pathname.startsWith(tab.href));
+          const isPosTab = tab.href === '/pos';
+
           return (
             <Link
               key={tab.name}
@@ -126,7 +145,14 @@ export function MobileBottomNav() {
                 isActive ? 'text-nyeni-blue' : 'text-slate-400 hover:text-slate-600'
               }`}
             >
-              <Icon className="w-5 h-5" />
+              <div className="relative">
+                <Icon className="w-5 h-5" />
+                {isPosTab && totalCups > 0 && (
+                  <span className="absolute -top-1.5 -right-2.5 min-w-[18px] h-[18px] px-1 rounded-full bg-nyeni-mango text-nyeni-navy font-black text-[10px] flex items-center justify-center shadow-xs">
+                    {totalCups}
+                  </span>
+                )}
+              </div>
               <span className="text-[11px] font-semibold mt-0.5">{tab.name}</span>
             </Link>
           );

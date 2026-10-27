@@ -32,7 +32,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     // Listen for custom trigger to open tour
     const handleOpenTour = () => setIsTourOpen(true);
     window.addEventListener('nyeni_open_tour', handleOpenTour);
-    return () => window.removeEventListener('nyeni_open_tour', handleOpenTour);
+    window.addEventListener('open-feature-tour', handleOpenTour);
+    return () => {
+      window.removeEventListener('nyeni_open_tour', handleOpenTour);
+      window.removeEventListener('open-feature-tour', handleOpenTour);
+    };
   }, []);
 
   // Client-side authentication guard
@@ -70,11 +74,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       <MobileBottomNav />
 
-      {/* Floating Tour Guide Trigger Button */}
+      {/* Floating Tour Guide Trigger Button (Desktop Only to prevent Mobile Cart overlap) */}
       <button
         type="button"
         onClick={() => setIsTourOpen(true)}
-        className="fixed bottom-20 lg:bottom-6 right-5 z-40 bg-white/95 hover:bg-white text-nyeni-navy border border-slate-200/90 shadow-ios-float px-3.5 py-2 rounded-full text-xs font-bold flex items-center gap-2 backdrop-blur-md transition-all hover:scale-105 active:scale-95"
+        className="hidden lg:flex fixed bottom-6 right-5 z-40 bg-white/95 hover:bg-white text-nyeni-navy border border-slate-200/90 shadow-ios-float px-3.5 py-2 rounded-full text-xs font-bold items-center gap-2 backdrop-blur-md transition-all hover:scale-105 active:scale-95"
         title="Buka Panduan Fitur Sistem"
       >
         <span className="w-2 h-2 rounded-full bg-nyeni-blue animate-pulse" />

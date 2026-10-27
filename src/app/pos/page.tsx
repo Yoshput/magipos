@@ -161,24 +161,32 @@ export default function PosPage() {
 
       {/* Mobile Floating Cart Summary Button */}
       {totalCups > 0 && (
-        <div className="lg:hidden fixed bottom-20 left-4 right-4 z-40 animate-in slide-in-from-bottom-4 duration-200">
+        <div className="lg:hidden fixed bottom-[calc(4.75rem+env(safe-area-inset-bottom,0px))] left-4 right-4 z-40 animate-in slide-in-from-bottom-4 duration-200">
           <button
             onClick={() => setIsMobileCartOpen(true)}
-            className="w-full bg-nyeni-navy text-white p-4 rounded-ios-card shadow-ios-float flex items-center justify-between active:scale-[0.99] transition-transform"
+            className="w-full bg-nyeni-navy hover:bg-slate-900 text-white p-3.5 sm:p-4 rounded-2xl shadow-xl border border-white/10 flex items-center justify-between active:scale-[0.98] transition-transform"
           >
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-nyeni-mango text-nyeni-navy font-black text-xs flex items-center justify-center">
-                {totalCups}
+              <div className="relative">
+                <div className="w-9 h-9 rounded-xl bg-nyeni-mango text-nyeni-navy font-black text-sm flex items-center justify-center shadow-xs">
+                  {totalCups}
+                </div>
+                <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-nyeni-blue opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-nyeni-blue"></span>
+                </span>
               </div>
               <div className="text-left">
-                <p className="text-xs text-slate-300 font-medium">Keranjang Belanja</p>
-                <p className="text-sm font-bold">{formatRupiah(total)}</p>
+                <p className="text-[11px] text-slate-300 font-semibold tracking-wide uppercase">
+                  Keranjang ({totalCups} Cup)
+                </p>
+                <p className="text-base font-black text-white">{formatRupiah(total)}</p>
               </div>
             </div>
 
-            <div className="flex items-center gap-1.5 text-xs font-bold bg-nyeni-blue px-3 py-1.5 rounded-ios">
+            <div className="flex items-center gap-2 text-xs font-bold bg-nyeni-blue hover:bg-nyeni-blue-hover text-white px-4 py-2 rounded-xl shadow-xs">
               <span>Buka Keranjang</span>
-              <ShoppingBag className="w-3.5 h-3.5" />
+              <ShoppingBag className="w-4 h-4" />
             </div>
           </button>
         </div>
@@ -186,8 +194,15 @@ export default function PosPage() {
 
       {/* Mobile Cart Sheet / Modal */}
       {isMobileCartOpen && (
-        <div className="lg:hidden fixed inset-0 z-50 flex flex-col justify-end bg-black/50 backdrop-blur-xs animate-in fade-in">
-          <div className="bg-white rounded-t-ios-sheet max-h-[85vh] h-[85vh] flex flex-col overflow-hidden shadow-ios-modal">
+        <div
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsMobileCartOpen(false);
+          }}
+          className="lg:hidden fixed inset-0 z-50 flex flex-col justify-end bg-black/60 backdrop-blur-xs animate-in fade-in duration-200"
+        >
+          <div className="bg-white rounded-t-3xl max-h-[88vh] h-[88vh] flex flex-col overflow-hidden shadow-2xl animate-in slide-in-from-bottom duration-300">
+            {/* iOS Bottom Sheet Drag Handle */}
+            <div className="w-12 h-1.5 bg-slate-300 rounded-full mx-auto my-2.5 shrink-0" />
             <CartPanel
               onCheckout={() => {
                 setIsMobileCartOpen(false);
@@ -205,6 +220,10 @@ export default function PosPage() {
         product={selectedProductForVariant}
         addons={addons}
         onClose={() => setSelectedProductForVariant(null)}
+        onAdded={() => {
+          setSelectedProductForVariant(null);
+          setIsMobileCartOpen(true);
+        }}
         onOpenCart={() => setIsMobileCartOpen(true)}
       />
 
