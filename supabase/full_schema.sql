@@ -10,12 +10,45 @@
 CREATE TABLE IF NOT EXISTS public.profiles (
   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   email TEXT,
-  full_name TEXT NOT NULL,
-  role TEXT NOT NULL CHECK (role IN ('admin', 'cashier')),
+  username TEXT,
+  full_name TEXT NOT NULL DEFAULT 'Pengguna',
+  role TEXT NOT NULL DEFAULT 'cashier' CHECK (role IN ('admin', 'cashier')),
   is_active BOOLEAN NOT NULL DEFAULT true,
   created_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now()),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT timezone('utc'::text, now())
 );
+
+-- Ensure columns exist even if profiles table was already created by Supabase templates
+DO $$ 
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_schema = 'public' AND table_name = 'profiles' AND column_name = 'role'
+  ) THEN
+    ALTER TABLE public.profiles ADD COLUMN role TEXT NOT NULL DEFAULT 'cashier' CHECK (role IN ('admin', 'cashier'));
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_schema = 'public' AND table_name = 'profiles' AND column_name = 'is_active'
+  ) THEN
+    ALTER TABLE public.profiles ADD COLUMN is_active BOOLEAN NOT NULL DEFAULT true;
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_schema = 'public' AND table_name = 'profiles' AND column_name = 'full_name'
+  ) THEN
+    ALTER TABLE public.profiles ADD COLUMN full_name TEXT NOT NULL DEFAULT 'Pengguna';
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_schema = 'public' AND table_name = 'profiles' AND column_name = 'username'
+  ) THEN
+    ALTER TABLE public.profiles ADD COLUMN username TEXT;
+  END IF;
+END $$;
 
 CREATE TABLE IF NOT EXISTS public.products (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
