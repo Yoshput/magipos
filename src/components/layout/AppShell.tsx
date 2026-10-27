@@ -35,6 +35,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     return () => window.removeEventListener('nyeni_open_tour', handleOpenTour);
   }, []);
 
+  // Client-side authentication guard
+  useEffect(() => {
+    if (!isLoading && !profile) {
+      window.location.href = '/login';
+    }
+  }, [isLoading, profile]);
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-6">

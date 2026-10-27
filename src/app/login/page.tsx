@@ -69,11 +69,12 @@ export default function LoginPage() {
     const targetUser = localDb.getSessionUser();
     const displayName =
       targetUser?.full_name || (isAdminUser ? 'Admin Owner' : 'Kasir Utama');
+    const targetRoute = isAdminUser ? '/dashboard' : '/pos';
 
     setLoginSuccessInfo({
       name: displayName,
       role: isAdminUser ? 'Admin' : 'Kasir',
-      targetRoute: isAdminUser ? '/dashboard' : '/pos',
+      targetRoute,
     });
 
     notify({
@@ -84,13 +85,10 @@ export default function LoginPage() {
         : 'Sesi kasir aktif. Siap melayani pesanan.',
     });
 
+    // Instant, guaranteed navigation via window.location.href (never stalls or hangs)
     setTimeout(() => {
-      if (isAdminUser) {
-        router.push('/dashboard');
-      } else {
-        router.push('/pos');
-      }
-    }, 650);
+      window.location.href = targetRoute;
+    }, 280);
   };
 
   const handleFormSubmit = (e: React.FormEvent) => {
@@ -102,14 +100,12 @@ export default function LoginPage() {
     executeLogin(identifier, password);
   };
 
-  // Quick continue from remembered account
+  // Quick continue from remembered account (instant trigger)
   const handleQuickContinue = () => {
     if (!remembered) return;
     setIsAutoLoggingIn(true);
     const pass = remembered.role === 'admin' ? 'admin123' : 'kasirsukses2026';
-    setTimeout(() => {
-      executeLogin(remembered.username, pass);
-    }, 400);
+    executeLogin(remembered.username, pass);
   };
 
   const fillQuickAccount = (quickUser: string, quickPass: string) => {

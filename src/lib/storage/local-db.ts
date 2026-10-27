@@ -27,6 +27,7 @@ const STORAGE_KEY = 'nyeni_pos_database_v2';
 const OLD_STORAGE_KEY = 'nyeni_pos_database_v1';
 const SESSION_COOKIE = 'nyeni_session';
 const LAST_LOGIN_KEY = 'nyeni_last_login';
+const ACTIVE_SESSION_KEY = 'nyeni_active_session';
 
 export interface RememberedAccount {
   username: string;
@@ -417,9 +418,21 @@ class LocalStoreManager {
   // ---------------- AUTH ----------------
   public setSessionCookie(profile: Profile): void {
     if (this.isBrowser()) {
-      document.cookie = `${SESSION_COOKIE}=${encodeURIComponent(
-        JSON.stringify({ id: profile.id, role: profile.role, username: profile.username })
-      )}; path=/; max-age=86400; SameSite=Lax`;
+      const isHttps = typeof window !== 'undefined' && window.location.protocol === 'https:';
+      const sessionPayload = JSON.stringify({
+        id: profile.id,
+        role: profile.role,
+        username: profile.username,
+      });
+      const cookieVal = encodeURIComponent(sessionPayload);
+      document.cookie = `${SESSION_COOKIE}=${cookieVal}; path=/; max-age=2592000; SameSite=Lax${
+        isHttps ? '; Secure' : ''
+      }`;
+      try {
+        window.localStorage.setItem(ACTIVE_SESSION_KEY, sessionPayload);
+      } catch {
+        // ignore
+      }
     }
   }
 
@@ -527,23 +540,47 @@ class LocalStoreManager {
 
   public logout(): void {
     if (this.isBrowser()) {
-      document.cookie = `${SESSION_COOKIE}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+      document.cookie = `${SESSION_COOKIE}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax`;
+      try {
+        window.localStorage.removeItem(ACTIVE_SESSION_KEY);
+      } catch {
+        // ignore
+      }
     }
   }
 
   public getSessionUser(): Profile | null {
     if (!this.isBrowser()) return DEFAULT_DATABASE.profiles[0];
 
-    const match = document.cookie.match(new RegExp('(^| )' + SESSION_COOKIE + '=([^;]+)'));
-    if (!match) return null;
+    const db = this.getDb();
+    let sessionData: { id?: string; role?: string; username?: string } | null = null;
 
+    // 1. Try reading cookie
     try {
-      const sessionData = JSON.parse(decodeURIComponent(match[2]));
-      const db = this.getDb();
-      return db.profiles.find((p) => p.id === sessionData.id && p.is_active) || null;
+      const match = document.cookie.match(new RegExp('(^| )' + SESSION_COOKIE + '=([^;]+)'));
+      if (match) {
+        sessionData = JSON.parse(decodeURIComponent(match[2]));
+      }
     } catch {
-      return null;
+      // ignore
     }
+
+    // 2. Fallback to localStorage session
+    if (!sessionData) {
+      try {
+        const stored = window.localStorage.getItem(ACTIVE_SESSION_KEY);
+        if (stored) {
+          sessionData = JSON.parse(stored);
+        }
+      } catch {
+        // ignore
+      }
+    }
+
+    if (!sessionData || !sessionData.id) return null;
+
+    const found = db.profiles.find((p) => p.id === sessionData?.id && p.is_active);
+    return found || null;
   }
 
   // ---------------- PRODUCTS & RECIPES ----------------
