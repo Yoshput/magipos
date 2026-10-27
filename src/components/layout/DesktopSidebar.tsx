@@ -18,6 +18,7 @@ import {
   Settings,
   LogOut,
 } from 'lucide-react';
+import { StorageModeBadge } from '@/components/ui/ConnectionStatus';
 
 export function DesktopSidebar() {
   const pathname = usePathname();
@@ -64,6 +65,12 @@ export function DesktopSidebar() {
           <h1 className="text-base font-extrabold text-nyeni-navy tracking-tight">NyeniPOS</h1>
           <p className="text-xs font-semibold text-nyeni-mango tracking-wider uppercase">Mango Nyeni</p>
         </div>
+      </div>
+
+      {/* Storage Mode Status */}
+      <div className="px-4 py-2 bg-slate-50 border-b border-border flex items-center justify-between text-[11px]">
+        <span className="text-muted font-medium">Penyimpanan:</span>
+        <StorageModeBadge />
       </div>
 
       {/* Navigation List */}

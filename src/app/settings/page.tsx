@@ -17,8 +17,11 @@ import {
   AlertCircle,
   Database,
   Download,
+  Upload,
   RotateCcw,
   Loader2,
+  Server,
+  ShieldCheck,
 } from 'lucide-react';
 
 export default function SettingsPage() {
@@ -103,6 +106,35 @@ export default function SettingsPage() {
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();
+  };
+
+  // Import JSON Backup
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  const handleImportBackup = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!window.confirm('Impor file cadangan ini? Data yang ada akan disinkronkan dengan data dari file.')) {
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const text = event.target?.result as string;
+        const parsed = JSON.parse(text);
+        const res = localDb.importDb(parsed);
+        alert(`Berhasil mengimpor data! ${res.message} (${res.count} transaksi dimuat).`);
+        fetchSettingsAndAudit();
+      } catch (err: unknown) {
+        alert(err instanceof Error ? err.message : 'Gagal memproses file JSON cadangan.');
+      } finally {
+        if (fileInputRef.current) fileInputRef.current.value = '';
+      }
+    };
+    reader.readAsText(file);
   };
 
   // Reset to Default Seed
@@ -359,23 +391,77 @@ export default function SettingsPage() {
       )}
 
       {activeTab === 'data' && (
-        <div className="space-y-6 max-w-2xl">
+        <div className="space-y-6 max-w-3xl">
+          {/* Storage Architecture Overview */}
           <div className="bg-white p-6 rounded-ios-card border border-border shadow-ios space-y-4">
-            <div>
-              <h3 className="text-base font-bold text-nyeni-navy">Penyimpanan Mandiri (Client-Side Storage)</h3>
-              <p className="text-xs text-muted mt-1">
-                Aplikasi beroperasi secara mandiri menggunakan penyimpanan lokal browser yang persisten. Tidak memerlukan setup server atau database cloud eksternal.
-              </p>
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2.5">
+                <Database className="w-5 h-5 text-nyeni-blue" />
+                <h3 className="text-base font-bold text-nyeni-navy">Arsitektur Penyimpanan Data</h3>
+              </div>
+              <span className="text-xs font-bold px-3 py-1 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
+                Dual-Mode Supported
+              </span>
             </div>
 
-            <div className="p-4 rounded-ios bg-nyeni-blue-soft/50 border border-nyeni-blue/20 text-xs text-nyeni-navy space-y-2">
-              <p className="font-bold">Keunggulan Standalone Mode:</p>
-              <ul className="list-disc list-inside space-y-1 text-slate-700">
-                <li>Langsung aktif dan siap dipakai detik pertama kali dibuka.</li>
-                <li>Dapat digunakan offline tanpa koneksi internet (PWA).</li>
-                <li>Data tetap tersimpan aman di perangkat meskipun browser ditutup.</li>
-              </ul>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+              {/* Mode A */}
+              <div className="p-4 rounded-ios border border-emerald-200 bg-emerald-50/50 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-emerald-950 text-sm">Mode A: Standalone Lokal</span>
+                  <span className="text-[10px] font-bold bg-emerald-200 text-emerald-800 px-2 py-0.5 rounded-full">
+                    Aktif Saat Ini
+                  </span>
+                </div>
+                <p className="text-emerald-900 leading-relaxed">
+                  Menyimpan seluruh transaksi, stok, resep, dan pengeluaran langsung pada browser LocalStorage perangkat.
+                </p>
+                <ul className="list-disc list-inside space-y-1 text-emerald-950 font-medium">
+                  <li>Zero external dependencies (tidak butuh setup cloud).</li>
+                  <li>Bisa beroperasi 100% offline (PWA).</li>
+                  <li>Data persisten di browser perangkat kasir.</li>
+                </ul>
+              </div>
+
+              {/* Mode B */}
+              <div className="p-4 rounded-ios border border-sky-200 bg-sky-50/50 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-sky-950 text-sm">Mode B: Supabase Cloud</span>
+                  <span className="text-[10px] font-bold bg-sky-200 text-sky-800 px-2 py-0.5 rounded-full">
+                    Production Multi-Device
+                  </span>
+                </div>
+                <p className="text-sky-900 leading-relaxed">
+                  Sinkronisasi realtime terpusat menggunakan PostgreSQL dengan Row-Level Security (RLS).
+                </p>
+                <ul className="list-disc list-inside space-y-1 text-sky-950 font-medium">
+                  <li>Data kasir tersinkron lintas perangkat & tablet.</li>
+                  <li>RLS membatasi kasir tidak dapat ubah harga/HPP.</li>
+                  <li>Backup otomatis di infrastruktur PostgreSQL.</li>
+                </ul>
+              </div>
             </div>
+          </div>
+
+          {/* Backup, Import & Reset */}
+          <div className="bg-white p-6 rounded-ios-card border border-border shadow-ios space-y-4">
+            <h3 className="text-sm font-bold text-nyeni-navy flex items-center gap-2 pb-2 border-b border-slate-100">
+              <Download className="w-4 h-4 text-nyeni-blue" />
+              <span>Cadangan & Pemulihan Database Lokal</span>
+            </h3>
+
+            <p className="text-xs text-muted">
+              Selalu unduh cadangan file JSON sebelum melakukan migrasi perangkat atau pembaruan besar data toko.
+            </p>
+
+            {/* Hidden file input for import */}
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleImportBackup}
+              accept=".json"
+              className="hidden"
+            />
 
             <div className="pt-2 flex flex-col sm:flex-row gap-3">
               <button
@@ -384,7 +470,16 @@ export default function SettingsPage() {
                 className="flex-1 py-3 px-4 rounded-ios bg-nyeni-blue text-white font-bold text-xs hover:bg-nyeni-blue-hover transition-colors shadow-sm flex items-center justify-center gap-2"
               >
                 <Download className="w-4 h-4" />
-                <span>Unduh Cadangan Database (.json)</span>
+                <span>Unduh Cadangan JSON</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="flex-1 py-3 px-4 rounded-ios border border-slate-300 bg-slate-50 text-slate-800 hover:bg-slate-100 font-bold text-xs transition-colors flex items-center justify-center gap-2"
+              >
+                <Upload className="w-4 h-4 text-slate-600" />
+                <span>Impor Cadangan JSON</span>
               </button>
 
               <button
@@ -393,8 +488,60 @@ export default function SettingsPage() {
                 className="py-3 px-4 rounded-ios border border-rose-300 bg-rose-50 text-rose-700 hover:bg-rose-100 font-bold text-xs transition-colors flex items-center justify-center gap-2"
               >
                 <RotateCcw className="w-4 h-4" />
-                <span>Reset ke Data Awal Poster</span>
+                <span>Reset Data Awal</span>
               </button>
+            </div>
+          </div>
+
+          {/* Supabase Setup Instructions */}
+          <div className="bg-white p-6 rounded-ios-card border border-border shadow-ios space-y-4">
+            <h3 className="text-sm font-bold text-nyeni-navy flex items-center gap-2 pb-2 border-b border-slate-100">
+              <Server className="w-4 h-4 text-nyeni-blue" />
+              <span>Panduan Aktivasi Supabase PostgreSQL (Mode Production)</span>
+            </h3>
+
+            <div className="text-xs text-slate-700 space-y-3 leading-relaxed">
+              <p>
+                Jika Anda ingin mengaktifkan sinkronisasi cloud antar perangkat (multi-kasir):
+              </p>
+
+              <ol className="list-decimal list-inside space-y-2 pl-1 font-medium">
+                <li>
+                  Buat project baru di{' '}
+                  <a
+                    href="https://supabase.com"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-nyeni-blue underline font-bold"
+                  >
+                    Supabase Dashboard
+                  </a>
+                  .
+                </li>
+                <li>
+                  Masuk ke menu <span className="font-bold">SQL Editor</span> di Supabase, lalu jalankan script yang ada pada file:{' '}
+                  <code className="bg-slate-100 px-1.5 py-0.5 rounded font-mono text-nyeni-navy">
+                    supabase/full_schema.sql
+                  </code>
+                  .
+                </li>
+                <li>
+                  Salin <span className="font-bold">Project URL</span> dan{' '}
+                  <span className="font-bold">Anon Public Key</span> dari Project Settings &gt; API.
+                </li>
+                <li>
+                  Tambahkan kedua variabel lingkungan tersebut di Project Settings Vercel atau file{' '}
+                  <code className="bg-slate-100 px-1.5 py-0.5 rounded font-mono text-nyeni-navy">
+                    .env.local
+                  </code>
+                  :
+                  <div className="mt-2 p-3 rounded-lg bg-slate-900 text-slate-100 font-mono text-[11px] space-y-1">
+                    <p>NEXT_PUBLIC_SUPABASE_URL=https://[YOUR-PROJECT].supabase.co</p>
+                    <p>NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOi...</p>
+                  </div>
+                </li>
+                <li>Redeploy aplikasi Anda di Vercel. Sistem akan mendeteksi Supabase secara otomatis.</li>
+              </ol>
             </div>
           </div>
         </div>

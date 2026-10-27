@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Wifi, WifiOff } from 'lucide-react';
+import { Wifi, WifiOff, Database } from 'lucide-react';
+import { isSupabaseConfigured } from '@/lib/supabase/client';
 
 export function ConnectionStatus() {
   const [isOnline, setIsOnline] = useState(true);
@@ -35,6 +36,32 @@ export function ConnectionStatus() {
     <div className="flex items-center gap-1.5 text-xs font-semibold text-rose-700 bg-rose-50 px-3 py-1 rounded-full border border-rose-200 animate-bounce">
       <WifiOff className="w-3.5 h-3.5" />
       <span>Offline (Hanya Lihat)</span>
+    </div>
+  );
+}
+
+export function StorageModeBadge() {
+  const [supabaseActive, setSupabaseActive] = useState(false);
+
+  useEffect(() => {
+    setSupabaseActive(isSupabaseConfigured());
+  }, []);
+
+  return (
+    <div
+      className={`hidden sm:flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full border transition-all ${
+        supabaseActive
+          ? 'text-sky-700 bg-sky-50 border-sky-200'
+          : 'text-slate-700 bg-slate-100 border-slate-200'
+      }`}
+      title={
+        supabaseActive
+          ? 'Tersambung ke Supabase Cloud PostgreSQL dengan RLS'
+          : 'Berjalan mandiri via Client-Side LocalStorage'
+      }
+    >
+      <Database className="w-3.5 h-3.5 text-slate-500" />
+      <span>{supabaseActive ? 'Supabase Cloud' : 'Mode Demo / Standalone'}</span>
     </div>
   );
 }

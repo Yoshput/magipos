@@ -68,6 +68,7 @@ export interface VariantRecipeItem {
   variant_id: string;
   ingredient_id: string;
   quantity_base_per_serving: number;
+  is_verified?: boolean;
   created_at: string;
   ingredient?: Ingredient;
 }
@@ -77,6 +78,7 @@ export interface AddonRecipeItem {
   addon_id: string;
   ingredient_id: string;
   quantity_base_per_addon: number;
+  is_verified?: boolean;
   created_at: string;
   ingredient?: Ingredient;
 }

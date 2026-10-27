@@ -240,9 +240,21 @@ export default function MenuPage() {
                               {variant.name}
                             </span>
                             <StatusBadge
-                              label={hasRecipe ? 'Resep Lengkap' : 'Belum Ada'}
-                              variant={hasRecipe ? 'success' : 'warning'}
-                              icon={false}
+                              label={
+                                hasRecipe
+                                  ? variant.recipe_items?.some((r) => r.is_verified)
+                                    ? 'Terverifikasi'
+                                    : 'Estimasi Awal'
+                                  : 'Belum Ada'
+                              }
+                              variant={
+                                hasRecipe
+                                  ? variant.recipe_items?.some((r) => r.is_verified)
+                                    ? 'success'
+                                    : 'info'
+                                  : 'warning'
+                              }
+                              icon={true}
                             />
                           </div>
 
@@ -282,7 +294,7 @@ export default function MenuPage() {
                               </div>
                             ) : (
                               <p className="text-amber-800 italic text-[11px]">
-                                Takaran resep belum dimasukkan. Penjualan diblokir sampai resep diatur.
+                                Takaran resep belum dimasukkan. Item tetap dapat dipesan kasir (pengurangan stok dilewati).
                               </p>
                             )}
                           </div>
@@ -290,11 +302,24 @@ export default function MenuPage() {
 
                         {/* Action */}
                         {isAdmin && (
-                          <div className="mt-3 pt-2">
+                          <div className="mt-3 pt-2 flex items-center gap-1.5">
+                            {hasRecipe && !variant.recipe_items?.some((r) => r.is_verified) && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  localDb.verifyRecipe(variant.id);
+                                  fetchMenuData();
+                                }}
+                                className="px-2.5 py-2 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 font-bold text-xs transition-colors shadow-2xs whitespace-nowrap"
+                                title="Verifikasi takaran resep ini sebagai resep resmi operasional"
+                              >
+                                Verifikasi
+                              </button>
+                            )}
                             <button
                               type="button"
                               onClick={() => handleOpenRecipeEditor(variant)}
-                              className="w-full py-2 rounded-lg bg-white border border-border text-foreground hover:bg-nyeni-blue hover:text-white hover:border-nyeni-blue font-bold text-xs transition-colors flex items-center justify-center gap-1.5 shadow-2xs"
+                              className="flex-1 py-2 rounded-lg bg-white border border-border text-foreground hover:bg-nyeni-blue hover:text-white hover:border-nyeni-blue font-bold text-xs transition-colors flex items-center justify-center gap-1.5 shadow-2xs"
                             >
                               <Edit2 className="w-3.5 h-3.5" />
                               <span>{hasRecipe ? 'Ubah Resep' : 'Atur Resep Sekarang'}</span>

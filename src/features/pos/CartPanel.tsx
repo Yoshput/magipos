@@ -11,14 +11,16 @@ import {
   Sparkles,
   ArrowRight,
   Tag,
+  X,
 } from 'lucide-react';
 
 interface CartPanelProps {
   onCheckout: () => void;
+  onClose?: () => void;
   className?: string;
 }
 
-export function CartPanel({ onCheckout, className = '' }: CartPanelProps) {
+export function CartPanel({ onCheckout, onClose, className = '' }: CartPanelProps) {
   const {
     items,
     removeItem,
@@ -49,14 +51,25 @@ export function CartPanel({ onCheckout, className = '' }: CartPanelProps) {
           </div>
         </div>
 
-        {items.length > 0 && (
-          <button
-            onClick={clearCart}
-            className="text-xs font-semibold text-rose-600 hover:text-rose-700 hover:bg-rose-50 px-2 py-1 rounded transition-colors"
-          >
-            Kosongkan
-          </button>
-        )}
+        <div className="flex items-center gap-2">
+          {items.length > 0 && (
+            <button
+              onClick={clearCart}
+              className="text-xs font-semibold text-rose-600 hover:text-rose-700 hover:bg-rose-50 px-2 py-1 rounded transition-colors"
+            >
+              Kosongkan
+            </button>
+          )}
+          {onClose && (
+            <button
+              onClick={onClose}
+              className="p-1.5 rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 transition-colors"
+              title="Tutup Keranjang"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Item List */}

@@ -161,10 +161,10 @@ export default function PosPage() {
 
       {/* Mobile Floating Cart Summary Button */}
       {totalCups > 0 && (
-        <div className="lg:hidden fixed bottom-18 left-4 right-4 z-30 animate-in slide-in-from-bottom-4 duration-200">
+        <div className="lg:hidden fixed bottom-20 left-4 right-4 z-40 animate-in slide-in-from-bottom-4 duration-200">
           <button
             onClick={() => setIsMobileCartOpen(true)}
-            className="w-full bg-nyeni-navy text-white p-4 rounded-ios-card shadow-ios-float flex items-center justify-between"
+            className="w-full bg-nyeni-navy text-white p-4 rounded-ios-card shadow-ios-float flex items-center justify-between active:scale-[0.99] transition-transform"
           >
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-full bg-nyeni-mango text-nyeni-navy font-black text-xs flex items-center justify-center">
@@ -193,6 +193,7 @@ export default function PosPage() {
                 setIsMobileCartOpen(false);
                 setIsCheckoutOpen(true);
               }}
+              onClose={() => setIsMobileCartOpen(false)}
               className="h-full rounded-none border-none shadow-none"
             />
           </div>
@@ -204,6 +205,7 @@ export default function PosPage() {
         product={selectedProductForVariant}
         addons={addons}
         onClose={() => setSelectedProductForVariant(null)}
+        onOpenCart={() => setIsMobileCartOpen(true)}
       />
 
       <CheckoutModal

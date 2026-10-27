@@ -38,6 +38,8 @@ export function CheckoutModal({ isOpen, onClose, onSuccess }: CheckoutModalProps
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('cash');
   const [cashReceived, setCashReceived] = useState<number>(total);
   const [qrisReference, setQrisReference] = useState('');
+  const [qrisVerified, setQrisVerified] = useState(false);
+  const [transferVerified, setTransferVerified] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [copiedBank, setCopiedBank] = useState(false);
@@ -51,13 +53,31 @@ export function CheckoutModal({ isOpen, onClose, onSuccess }: CheckoutModalProps
       setCashReceived(total);
       setQrisReference('');
       setErrorMessage('');
+      setQrisVerified(false);
+      setTransferVerified(false);
     }
   }, [isOpen, total]);
+
+  // Reset verification checkboxes on payment method change
+  useEffect(() => {
+    setQrisVerified(false);
+    setTransferVerified(false);
+    setErrorMessage('');
+  }, [paymentMethod]);
 
   if (!isOpen) return null;
 
   const changeDue = paymentMethod === 'cash' ? calculateChangeDue(total, cashReceived) : 0;
   const isCashValid = paymentMethod !== 'cash' || (cashReceived >= total && changeDue >= 0);
+
+  const isConfirmAllowed =
+    !isSubmitting &&
+    items.length > 0 &&
+    (paymentMethod === 'cash'
+      ? isCashValid && total > 0
+      : paymentMethod === 'qris'
+      ? qrisVerified
+      : transferVerified);
 
   // Quick cash buttons
   const quickCashOptions = [
@@ -80,6 +100,16 @@ export function CheckoutModal({ isOpen, onClose, onSuccess }: CheckoutModalProps
 
     if (paymentMethod === 'cash' && cashReceived < total) {
       setErrorMessage('Nominal uang tunai kurang dari total belanja.');
+      return;
+    }
+
+    if (paymentMethod === 'qris' && !qrisVerified) {
+      setErrorMessage('Wajib mencentang konfirmasi verifikasi notifikasi GoPay Merchant.');
+      return;
+    }
+
+    if (paymentMethod === 'transfer' && !transferVerified) {
+      setErrorMessage('Wajib mencentang konfirmasi verifikasi mutasi rekening blu by BCA.');
       return;
     }
 
@@ -338,6 +368,22 @@ export function CheckoutModal({ isOpen, onClose, onSuccess }: CheckoutModalProps
                   Petunjuk: Cocokkan dengan notifikasi aplikasi GoBiz kasir untuk validasi transaksi.
                 </p>
               </div>
+
+              {/* Mandatory QRIS Manual Verification Checkbox */}
+              <div className="pt-2 text-left border-t border-slate-200">
+                <label className="flex items-start gap-2.5 p-3 rounded-xl bg-amber-50 border border-amber-300/80 cursor-pointer hover:bg-amber-100/60 transition-colors">
+                  <input
+                    type="checkbox"
+                    checked={qrisVerified}
+                    onChange={(e) => setQrisVerified(e.target.checked)}
+                    className="mt-0.5 w-4 h-4 text-nyeni-blue rounded focus:ring-nyeni-blue"
+                  />
+                  <span className="text-xs font-semibold text-amber-950 leading-snug">
+                    Saya sudah memeriksa notifikasi/riwayat GoPay Merchant dan memastikan pembayaran sebesar{' '}
+                    <span className="font-bold underline">{formatRupiah(total)}</span> sudah masuk.
+                  </span>
+                </label>
+              </div>
             </div>
           )}
 
@@ -413,6 +459,22 @@ export function CheckoutModal({ isOpen, onClose, onSuccess }: CheckoutModalProps
               <div className="p-2.5 rounded-xl bg-amber-50/80 border border-amber-200 text-amber-900 text-[11px] font-medium leading-relaxed">
                 Pastikan nama pengirim dan bukti mutasi berhasil tampil di m-Banking sebelum menekan tombol konfirmasi bayar.
               </div>
+
+              {/* Mandatory Transfer Manual Verification Checkbox */}
+              <div className="pt-1 text-left">
+                <label className="flex items-start gap-2.5 p-3 rounded-xl bg-amber-50 border border-amber-300/80 cursor-pointer hover:bg-amber-100/60 transition-colors">
+                  <input
+                    type="checkbox"
+                    checked={transferVerified}
+                    onChange={(e) => setTransferVerified(e.target.checked)}
+                    className="mt-0.5 w-4 h-4 text-nyeni-blue rounded focus:ring-nyeni-blue"
+                  />
+                  <span className="text-xs font-semibold text-amber-950 leading-snug">
+                    Saya sudah memeriksa mutasi rekening blu by BCA dan memastikan transfer sebesar{' '}
+                    <span className="font-bold underline">{formatRupiah(total)}</span> sudah masuk.
+                  </span>
+                </label>
+              </div>
             </div>
           )}
 
@@ -438,7 +500,7 @@ export function CheckoutModal({ isOpen, onClose, onSuccess }: CheckoutModalProps
           <button
             type="button"
             onClick={handleSubmit}
-            disabled={isSubmitting || !isCashValid}
+            disabled={!isConfirmAllowed}
             className="px-6 py-2.5 min-h-[44px] rounded-ios bg-nyeni-blue text-white font-bold text-sm hover:bg-nyeni-blue-hover transition-all shadow-sm active:scale-[0.98] disabled:opacity-40 disabled:pointer-events-none flex items-center gap-2"
           >
             {isSubmitting ? (

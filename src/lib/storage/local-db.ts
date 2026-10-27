@@ -10,6 +10,7 @@ import {
   Addon,
   Ingredient,
   VariantRecipeItem,
+  AddonRecipeItem,
   Sale,
   SaleItem,
   SaleItemAddon,
@@ -43,6 +44,7 @@ export interface DatabaseSchema {
   addons: Addon[];
   ingredients: Ingredient[];
   variant_recipe_items: VariantRecipeItem[];
+  addon_recipe_items: AddonRecipeItem[];
   sales: Sale[];
   sale_items: SaleItem[];
   sale_item_addons: SaleItemAddon[];
@@ -166,82 +168,110 @@ export const DEFAULT_DATABASE: DatabaseSchema = {
     { id: 'ing_sendok', name: 'Sendok Higienis', base_unit: 'pcs', purchase_unit: 'pack (100 pcs)', conversion_to_base: 100, stock_base: 500, minimum_stock_base: 100, average_cost_per_base: 120, is_active: true, created_at: '2026-10-26T00:00:00.000Z', updated_at: '2026-10-26T00:00:00.000Z' },
   ],
   // Pre-configured standard recipe items so POS works instantly out of the box!
-  // Can be adjusted anytime by Admin via Menu & Resep editor
+  // Marked as is_verified: false (Estimasi Awal / Perlu Konfirmasi Owner) per audit instructions
+  // Can be verified or adjusted anytime by Admin via Menu & Resep editor
   variant_recipe_items: [
     // Dragon Sago 200ml
-    { id: 'rcp_ds_200_1', variant_id: 'var_ds_200', ingredient_id: 'ing_naga', quantity_base_per_serving: 50, created_at: '2026-10-26T00:00:00.000Z' },
-    { id: 'rcp_ds_200_2', variant_id: 'var_ds_200', ingredient_id: 'ing_sagu', quantity_base_per_serving: 30, created_at: '2026-10-26T00:00:00.000Z' },
-    { id: 'rcp_ds_200_3', variant_id: 'var_ds_200', ingredient_id: 'ing_susu', quantity_base_per_serving: 60, created_at: '2026-10-26T00:00:00.000Z' },
-    { id: 'rcp_ds_200_4', variant_id: 'var_ds_200', ingredient_id: 'ing_cup_200', quantity_base_per_serving: 1, created_at: '2026-10-26T00:00:00.000Z' },
-    { id: 'rcp_ds_200_5', variant_id: 'var_ds_200', ingredient_id: 'ing_sendok', quantity_base_per_serving: 1, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ds_200_1', variant_id: 'var_ds_200', ingredient_id: 'ing_naga', quantity_base_per_serving: 50, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ds_200_2', variant_id: 'var_ds_200', ingredient_id: 'ing_sagu', quantity_base_per_serving: 30, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ds_200_3', variant_id: 'var_ds_200', ingredient_id: 'ing_susu', quantity_base_per_serving: 60, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ds_200_4', variant_id: 'var_ds_200', ingredient_id: 'ing_cup_200', quantity_base_per_serving: 1, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ds_200_5', variant_id: 'var_ds_200', ingredient_id: 'ing_sendok', quantity_base_per_serving: 1, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
     // Dragon Sago 300ml
-    { id: 'rcp_ds_300_1', variant_id: 'var_ds_300', ingredient_id: 'ing_naga', quantity_base_per_serving: 75, created_at: '2026-10-26T00:00:00.000Z' },
-    { id: 'rcp_ds_300_2', variant_id: 'var_ds_300', ingredient_id: 'ing_sagu', quantity_base_per_serving: 45, created_at: '2026-10-26T00:00:00.000Z' },
-    { id: 'rcp_ds_300_3', variant_id: 'var_ds_300', ingredient_id: 'ing_susu', quantity_base_per_serving: 90, created_at: '2026-10-26T00:00:00.000Z' },
-    { id: 'rcp_ds_300_4', variant_id: 'var_ds_300', ingredient_id: 'ing_cup_300', quantity_base_per_serving: 1, created_at: '2026-10-26T00:00:00.000Z' },
-    { id: 'rcp_ds_300_5', variant_id: 'var_ds_300', ingredient_id: 'ing_sendok', quantity_base_per_serving: 1, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ds_300_1', variant_id: 'var_ds_300', ingredient_id: 'ing_naga', quantity_base_per_serving: 75, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ds_300_2', variant_id: 'var_ds_300', ingredient_id: 'ing_sagu', quantity_base_per_serving: 45, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ds_300_3', variant_id: 'var_ds_300', ingredient_id: 'ing_susu', quantity_base_per_serving: 90, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ds_300_4', variant_id: 'var_ds_300', ingredient_id: 'ing_cup_300', quantity_base_per_serving: 1, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ds_300_5', variant_id: 'var_ds_300', ingredient_id: 'ing_sendok', quantity_base_per_serving: 1, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
     // Dragon Sago 400ml
-    { id: 'rcp_ds_400_1', variant_id: 'var_ds_400', ingredient_id: 'ing_naga', quantity_base_per_serving: 100, created_at: '2026-10-26T00:00:00.000Z' },
-    { id: 'rcp_ds_400_2', variant_id: 'var_ds_400', ingredient_id: 'ing_sagu', quantity_base_per_serving: 60, created_at: '2026-10-26T00:00:00.000Z' },
-    { id: 'rcp_ds_400_3', variant_id: 'var_ds_400', ingredient_id: 'ing_susu', quantity_base_per_serving: 120, created_at: '2026-10-26T00:00:00.000Z' },
-    { id: 'rcp_ds_400_4', variant_id: 'var_ds_400', ingredient_id: 'ing_cup_400', quantity_base_per_serving: 1, created_at: '2026-10-26T00:00:00.000Z' },
-    { id: 'rcp_ds_400_5', variant_id: 'var_ds_400', ingredient_id: 'ing_sendok', quantity_base_per_serving: 1, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ds_400_1', variant_id: 'var_ds_400', ingredient_id: 'ing_naga', quantity_base_per_serving: 100, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ds_400_2', variant_id: 'var_ds_400', ingredient_id: 'ing_sagu', quantity_base_per_serving: 60, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ds_400_3', variant_id: 'var_ds_400', ingredient_id: 'ing_susu', quantity_base_per_serving: 120, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ds_400_4', variant_id: 'var_ds_400', ingredient_id: 'ing_cup_400', quantity_base_per_serving: 1, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ds_400_5', variant_id: 'var_ds_400', ingredient_id: 'ing_sendok', quantity_base_per_serving: 1, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
     // Dragon Sago 500ml
-    { id: 'rcp_ds_500_1', variant_id: 'var_ds_500', ingredient_id: 'ing_naga', quantity_base_per_serving: 125, created_at: '2026-10-26T00:00:00.000Z' },
-    { id: 'rcp_ds_500_2', variant_id: 'var_ds_500', ingredient_id: 'ing_sagu', quantity_base_per_serving: 75, created_at: '2026-10-26T00:00:00.000Z' },
-    { id: 'rcp_ds_500_3', variant_id: 'var_ds_500', ingredient_id: 'ing_susu', quantity_base_per_serving: 150, created_at: '2026-10-26T00:00:00.000Z' },
-    { id: 'rcp_ds_500_4', variant_id: 'var_ds_500', ingredient_id: 'ing_cup_500', quantity_base_per_serving: 1, created_at: '2026-10-26T00:00:00.000Z' },
-    { id: 'rcp_ds_500_5', variant_id: 'var_ds_500', ingredient_id: 'ing_sendok', quantity_base_per_serving: 1, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ds_500_1', variant_id: 'var_ds_500', ingredient_id: 'ing_naga', quantity_base_per_serving: 125, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ds_500_2', variant_id: 'var_ds_500', ingredient_id: 'ing_sagu', quantity_base_per_serving: 75, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ds_500_3', variant_id: 'var_ds_500', ingredient_id: 'ing_susu', quantity_base_per_serving: 150, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ds_500_4', variant_id: 'var_ds_500', ingredient_id: 'ing_cup_500', quantity_base_per_serving: 1, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ds_500_5', variant_id: 'var_ds_500', ingredient_id: 'ing_sendok', quantity_base_per_serving: 1, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
 
     // Mango Sago 200ml
-    { id: 'rcp_ms_200_1', variant_id: 'var_ms_200', ingredient_id: 'ing_mangga', quantity_base_per_serving: 60, created_at: '2026-10-26T00:00:00.000Z' },
-    { id: 'rcp_ms_200_2', variant_id: 'var_ms_200', ingredient_id: 'ing_sagu', quantity_base_per_serving: 30, created_at: '2026-10-26T00:00:00.000Z' },
-    { id: 'rcp_ms_200_3', variant_id: 'var_ms_200', ingredient_id: 'ing_susu', quantity_base_per_serving: 60, created_at: '2026-10-26T00:00:00.000Z' },
-    { id: 'rcp_ms_200_4', variant_id: 'var_ms_200', ingredient_id: 'ing_cup_200', quantity_base_per_serving: 1, created_at: '2026-10-26T00:00:00.000Z' },
-    { id: 'rcp_ms_200_5', variant_id: 'var_ms_200', ingredient_id: 'ing_sendok', quantity_base_per_serving: 1, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ms_200_1', variant_id: 'var_ms_200', ingredient_id: 'ing_mangga', quantity_base_per_serving: 60, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ms_200_2', variant_id: 'var_ms_200', ingredient_id: 'ing_sagu', quantity_base_per_serving: 30, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ms_200_3', variant_id: 'var_ms_200', ingredient_id: 'ing_susu', quantity_base_per_serving: 60, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ms_200_4', variant_id: 'var_ms_200', ingredient_id: 'ing_cup_200', quantity_base_per_serving: 1, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ms_200_5', variant_id: 'var_ms_200', ingredient_id: 'ing_sendok', quantity_base_per_serving: 1, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
     // Mango Sago 300ml
-    { id: 'rcp_ms_300_1', variant_id: 'var_ms_300', ingredient_id: 'ing_mangga', quantity_base_per_serving: 90, created_at: '2026-10-26T00:00:00.000Z' },
-    { id: 'rcp_ms_300_2', variant_id: 'var_ms_300', ingredient_id: 'ing_sagu', quantity_base_per_serving: 45, created_at: '2026-10-26T00:00:00.000Z' },
-    { id: 'rcp_ms_300_3', variant_id: 'var_ms_300', ingredient_id: 'ing_susu', quantity_base_per_serving: 90, created_at: '2026-10-26T00:00:00.000Z' },
-    { id: 'rcp_ms_300_4', variant_id: 'var_ms_300', ingredient_id: 'ing_cup_300', quantity_base_per_serving: 1, created_at: '2026-10-26T00:00:00.000Z' },
-    { id: 'rcp_ms_300_5', variant_id: 'var_ms_300', ingredient_id: 'ing_sendok', quantity_base_per_serving: 1, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ms_300_1', variant_id: 'var_ms_300', ingredient_id: 'ing_mangga', quantity_base_per_serving: 90, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ms_300_2', variant_id: 'var_ms_300', ingredient_id: 'ing_sagu', quantity_base_per_serving: 45, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ms_300_3', variant_id: 'var_ms_300', ingredient_id: 'ing_susu', quantity_base_per_serving: 90, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ms_300_4', variant_id: 'var_ms_300', ingredient_id: 'ing_cup_300', quantity_base_per_serving: 1, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ms_300_5', variant_id: 'var_ms_300', ingredient_id: 'ing_sendok', quantity_base_per_serving: 1, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
     // Mango Sago 400ml
-    { id: 'rcp_ms_400_1', variant_id: 'var_ms_400', ingredient_id: 'ing_mangga', quantity_base_per_serving: 120, created_at: '2026-10-26T00:00:00.000Z' },
-    { id: 'rcp_ms_400_2', variant_id: 'var_ms_400', ingredient_id: 'ing_sagu', quantity_base_per_serving: 60, created_at: '2026-10-26T00:00:00.000Z' },
-    { id: 'rcp_ms_400_3', variant_id: 'var_ms_400', ingredient_id: 'ing_susu', quantity_base_per_serving: 120, created_at: '2026-10-26T00:00:00.000Z' },
-    { id: 'rcp_ms_400_4', variant_id: 'var_ms_400', ingredient_id: 'ing_cup_400', quantity_base_per_serving: 1, created_at: '2026-10-26T00:00:00.000Z' },
-    { id: 'rcp_ms_400_5', variant_id: 'var_ms_400', ingredient_id: 'ing_sendok', quantity_base_per_serving: 1, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ms_400_1', variant_id: 'var_ms_400', ingredient_id: 'ing_mangga', quantity_base_per_serving: 120, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ms_400_2', variant_id: 'var_ms_400', ingredient_id: 'ing_sagu', quantity_base_per_serving: 60, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ms_400_3', variant_id: 'var_ms_400', ingredient_id: 'ing_susu', quantity_base_per_serving: 120, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ms_400_4', variant_id: 'var_ms_400', ingredient_id: 'ing_cup_400', quantity_base_per_serving: 1, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ms_400_5', variant_id: 'var_ms_400', ingredient_id: 'ing_sendok', quantity_base_per_serving: 1, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
     // Mango Sago 500ml
-    { id: 'rcp_ms_500_1', variant_id: 'var_ms_500', ingredient_id: 'ing_mangga', quantity_base_per_serving: 150, created_at: '2026-10-26T00:00:00.000Z' },
-    { id: 'rcp_ms_500_2', variant_id: 'var_ms_500', ingredient_id: 'ing_sagu', quantity_base_per_serving: 75, created_at: '2026-10-26T00:00:00.000Z' },
-    { id: 'rcp_ms_500_3', variant_id: 'var_ms_500', ingredient_id: 'ing_susu', quantity_base_per_serving: 150, created_at: '2026-10-26T00:00:00.000Z' },
-    { id: 'rcp_ms_500_4', variant_id: 'var_ms_500', ingredient_id: 'ing_cup_500', quantity_base_per_serving: 1, created_at: '2026-10-26T00:00:00.000Z' },
-    { id: 'rcp_ms_500_5', variant_id: 'var_ms_500', ingredient_id: 'ing_sendok', quantity_base_per_serving: 1, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ms_500_1', variant_id: 'var_ms_500', ingredient_id: 'ing_mangga', quantity_base_per_serving: 150, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ms_500_2', variant_id: 'var_ms_500', ingredient_id: 'ing_sagu', quantity_base_per_serving: 75, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ms_500_3', variant_id: 'var_ms_500', ingredient_id: 'ing_susu', quantity_base_per_serving: 150, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ms_500_4', variant_id: 'var_ms_500', ingredient_id: 'ing_cup_500', quantity_base_per_serving: 1, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ms_500_5', variant_id: 'var_ms_500', ingredient_id: 'ing_sendok', quantity_base_per_serving: 1, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
 
     // Strawberry Sago 200ml
-    { id: 'rcp_ss_200_1', variant_id: 'var_ss_200', ingredient_id: 'ing_stroberi', quantity_base_per_serving: 50, created_at: '2026-10-26T00:00:00.000Z' },
-    { id: 'rcp_ss_200_2', variant_id: 'var_ss_200', ingredient_id: 'ing_sagu', quantity_base_per_serving: 30, created_at: '2026-10-26T00:00:00.000Z' },
-    { id: 'rcp_ss_200_3', variant_id: 'var_ss_200', ingredient_id: 'ing_susu', quantity_base_per_serving: 60, created_at: '2026-10-26T00:00:00.000Z' },
-    { id: 'rcp_ss_200_4', variant_id: 'var_ss_200', ingredient_id: 'ing_cup_200', quantity_base_per_serving: 1, created_at: '2026-10-26T00:00:00.000Z' },
-    { id: 'rcp_ss_200_5', variant_id: 'var_ss_200', ingredient_id: 'ing_sendok', quantity_base_per_serving: 1, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ss_200_1', variant_id: 'var_ss_200', ingredient_id: 'ing_stroberi', quantity_base_per_serving: 50, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ss_200_2', variant_id: 'var_ss_200', ingredient_id: 'ing_sagu', quantity_base_per_serving: 30, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ss_200_3', variant_id: 'var_ss_200', ingredient_id: 'ing_susu', quantity_base_per_serving: 60, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ss_200_4', variant_id: 'var_ss_200', ingredient_id: 'ing_cup_200', quantity_base_per_serving: 1, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ss_200_5', variant_id: 'var_ss_200', ingredient_id: 'ing_sendok', quantity_base_per_serving: 1, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
     // Strawberry Sago 300ml
-    { id: 'rcp_ss_300_1', variant_id: 'var_ss_300', ingredient_id: 'ing_stroberi', quantity_base_per_serving: 75, created_at: '2026-10-26T00:00:00.000Z' },
-    { id: 'rcp_ss_300_2', variant_id: 'var_ss_300', ingredient_id: 'ing_sagu', quantity_base_per_serving: 45, created_at: '2026-10-26T00:00:00.000Z' },
-    { id: 'rcp_ss_300_3', variant_id: 'var_ss_300', ingredient_id: 'ing_susu', quantity_base_per_serving: 90, created_at: '2026-10-26T00:00:00.000Z' },
-    { id: 'rcp_ss_300_4', variant_id: 'var_ss_300', ingredient_id: 'ing_cup_300', quantity_base_per_serving: 1, created_at: '2026-10-26T00:00:00.000Z' },
-    { id: 'rcp_ss_300_5', variant_id: 'var_ss_300', ingredient_id: 'ing_sendok', quantity_base_per_serving: 1, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ss_300_1', variant_id: 'var_ss_300', ingredient_id: 'ing_stroberi', quantity_base_per_serving: 75, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ss_300_2', variant_id: 'var_ss_300', ingredient_id: 'ing_sagu', quantity_base_per_serving: 45, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ss_300_3', variant_id: 'var_ss_300', ingredient_id: 'ing_susu', quantity_base_per_serving: 90, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ss_300_4', variant_id: 'var_ss_300', ingredient_id: 'ing_cup_300', quantity_base_per_serving: 1, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ss_300_5', variant_id: 'var_ss_300', ingredient_id: 'ing_sendok', quantity_base_per_serving: 1, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
     // Strawberry Sago 400ml
-    { id: 'rcp_ss_400_1', variant_id: 'var_ss_400', ingredient_id: 'ing_stroberi', quantity_base_per_serving: 100, created_at: '2026-10-26T00:00:00.000Z' },
-    { id: 'rcp_ss_400_2', variant_id: 'var_ss_400', ingredient_id: 'ing_sagu', quantity_base_per_serving: 60, created_at: '2026-10-26T00:00:00.000Z' },
-    { id: 'rcp_ss_400_3', variant_id: 'var_ss_400', ingredient_id: 'ing_susu', quantity_base_per_serving: 120, created_at: '2026-10-26T00:00:00.000Z' },
-    { id: 'rcp_ss_400_4', variant_id: 'var_ss_400', ingredient_id: 'ing_cup_400', quantity_base_per_serving: 1, created_at: '2026-10-26T00:00:00.000Z' },
-    { id: 'rcp_ss_400_5', variant_id: 'var_ss_400', ingredient_id: 'ing_sendok', quantity_base_per_serving: 1, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ss_400_1', variant_id: 'var_ss_400', ingredient_id: 'ing_stroberi', quantity_base_per_serving: 100, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ss_400_2', variant_id: 'var_ss_400', ingredient_id: 'ing_sagu', quantity_base_per_serving: 60, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ss_400_3', variant_id: 'var_ss_400', ingredient_id: 'ing_susu', quantity_base_per_serving: 120, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ss_400_4', variant_id: 'var_ss_400', ingredient_id: 'ing_cup_400', quantity_base_per_serving: 1, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ss_400_5', variant_id: 'var_ss_400', ingredient_id: 'ing_sendok', quantity_base_per_serving: 1, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
     // Strawberry Sago 500ml
-    { id: 'rcp_ss_500_1', variant_id: 'var_ss_500', ingredient_id: 'ing_stroberi', quantity_base_per_serving: 125, created_at: '2026-10-26T00:00:00.000Z' },
-    { id: 'rcp_ss_500_2', variant_id: 'var_ss_500', ingredient_id: 'ing_sagu', quantity_base_per_serving: 75, created_at: '2026-10-26T00:00:00.000Z' },
-    { id: 'rcp_ss_500_3', variant_id: 'var_ss_500', ingredient_id: 'ing_susu', quantity_base_per_serving: 150, created_at: '2026-10-26T00:00:00.000Z' },
-    { id: 'rcp_ss_500_4', variant_id: 'var_ss_500', ingredient_id: 'ing_cup_500', quantity_base_per_serving: 1, created_at: '2026-10-26T00:00:00.000Z' },
-    { id: 'rcp_ss_500_5', variant_id: 'var_ss_500', ingredient_id: 'ing_sendok', quantity_base_per_serving: 1, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ss_500_1', variant_id: 'var_ss_500', ingredient_id: 'ing_stroberi', quantity_base_per_serving: 125, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ss_500_2', variant_id: 'var_ss_500', ingredient_id: 'ing_sagu', quantity_base_per_serving: 75, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ss_500_3', variant_id: 'var_ss_500', ingredient_id: 'ing_susu', quantity_base_per_serving: 150, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ss_500_4', variant_id: 'var_ss_500', ingredient_id: 'ing_cup_500', quantity_base_per_serving: 1, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
+    { id: 'rcp_ss_500_5', variant_id: 'var_ss_500', ingredient_id: 'ing_sendok', quantity_base_per_serving: 1, is_verified: false, created_at: '2026-10-26T00:00:00.000Z' },
+  ],
+  addon_recipe_items: [
+    // Mix Fruit Addon: 15g mangga + 15g buah naga + 15g stroberi segar
+    {
+      id: 'rcp_addon_mf_1',
+      addon_id: 'addon_mix_fruit',
+      ingredient_id: 'ing_mangga',
+      quantity_base_per_addon: 15,
+      is_verified: false,
+      created_at: '2026-10-26T00:00:00.000Z',
+    },
+    {
+      id: 'rcp_addon_mf_2',
+      addon_id: 'addon_mix_fruit',
+      ingredient_id: 'ing_naga',
+      quantity_base_per_addon: 15,
+      is_verified: false,
+      created_at: '2026-10-26T00:00:00.000Z',
+    },
+    {
+      id: 'rcp_addon_mf_3',
+      addon_id: 'addon_mix_fruit',
+      ingredient_id: 'ing_stroberi',
+      quantity_base_per_addon: 15,
+      is_verified: false,
+      created_at: '2026-10-26T00:00:00.000Z',
+    },
   ],
   sales: [],
   sale_items: [],
@@ -282,13 +312,18 @@ export const DEFAULT_DATABASE: DatabaseSchema = {
 // STORAGE MANAGER CLASS
 // -------------------------------------------------------------
 class LocalStoreManager {
+  private memoryDb: DatabaseSchema | null = null;
+
   private isBrowser(): boolean {
     return typeof window !== 'undefined' && typeof window.localStorage !== 'undefined';
   }
 
   public getDb(): DatabaseSchema {
     if (!this.isBrowser()) {
-      return DEFAULT_DATABASE;
+      if (!this.memoryDb) {
+        this.memoryDb = JSON.parse(JSON.stringify(DEFAULT_DATABASE));
+      }
+      return this.memoryDb!;
     }
 
     try {
@@ -391,6 +426,12 @@ class LocalStoreManager {
         }
       }
 
+      // Ensure addon_recipe_items exists
+      if (!db.addon_recipe_items || !Array.isArray(db.addon_recipe_items)) {
+        db.addon_recipe_items = [...DEFAULT_DATABASE.addon_recipe_items];
+        modified = true;
+      }
+
       if (modified) {
         this.saveDb(db);
       }
@@ -402,7 +443,10 @@ class LocalStoreManager {
   }
 
   public saveDb(db: DatabaseSchema): void {
-    if (!this.isBrowser()) return;
+    if (!this.isBrowser()) {
+      this.memoryDb = db;
+      return;
+    }
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
     } catch (err) {
@@ -411,8 +455,51 @@ class LocalStoreManager {
   }
 
   public resetToDefault(): void {
-    if (!this.isBrowser()) return;
+    if (!this.isBrowser()) {
+      this.memoryDb = JSON.parse(JSON.stringify(DEFAULT_DATABASE));
+      return;
+    }
     this.saveDb(DEFAULT_DATABASE);
+  }
+
+  public importDb(data: Partial<DatabaseSchema>): { success: boolean; message: string; count: number } {
+    if (!data || typeof data !== 'object') {
+      throw new Error('Format file JSON tidak valid.');
+    }
+    const current = this.getDb();
+    if (!data.products && !data.sales && !data.ingredients) {
+      throw new Error('File cadangan tidak memuat tabel database MagiPOS yang valid.');
+    }
+
+    const merged: DatabaseSchema = {
+      ...current,
+      ...data,
+      profiles: data.profiles || current.profiles,
+      products: data.products || current.products,
+      product_variants: data.product_variants || current.product_variants,
+      addons: data.addons || current.addons,
+      ingredients: data.ingredients || current.ingredients,
+      variant_recipe_items: data.variant_recipe_items || current.variant_recipe_items,
+      addon_recipe_items:
+        data.addon_recipe_items || current.addon_recipe_items || DEFAULT_DATABASE.addon_recipe_items,
+      sales: data.sales || current.sales,
+      sale_items: data.sale_items || current.sale_items,
+      sale_item_addons: data.sale_item_addons || current.sale_item_addons,
+      inventory_movements: data.inventory_movements || current.inventory_movements,
+      stock_purchases: data.stock_purchases || current.stock_purchases,
+      stock_purchase_items: data.stock_purchase_items || current.stock_purchase_items,
+      expenses: data.expenses || current.expenses,
+      audit_logs: data.audit_logs || current.audit_logs,
+      business_settings: data.business_settings || current.business_settings,
+      credentials: data.credentials || current.credentials,
+    };
+
+    this.saveDb(merged);
+    return {
+      success: true,
+      message: 'Database berhasil dipulihkan dari file cadangan.',
+      count: merged.sales?.length || 0,
+    };
   }
 
   // ---------------- AUTH ----------------
@@ -617,17 +704,64 @@ class LocalStoreManager {
     // remove existing
     db.variant_recipe_items = db.variant_recipe_items.filter((r) => r.variant_id !== variantId);
 
-    // add new
+    // add new with verified true
     for (const item of items) {
       db.variant_recipe_items.push({
         id: `rcp_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
         variant_id: variantId,
         ingredient_id: item.ingredient_id,
         quantity_base_per_serving: item.quantity,
+        is_verified: true,
         created_at: new Date().toISOString(),
       });
     }
 
+    this.saveDb(db);
+  }
+
+  public verifyRecipe(variantId: string): void {
+    const db = this.getDb();
+    const items = db.variant_recipe_items.filter((r) => r.variant_id === variantId);
+    for (const it of items) {
+      it.is_verified = true;
+    }
+    this.saveDb(db);
+  }
+
+  public getAddonRecipeItems(): AddonRecipeItem[] {
+    const db = this.getDb();
+    return (db.addon_recipe_items || []).map((ar) => ({
+      ...ar,
+      ingredient: db.ingredients.find((i) => i.id === ar.ingredient_id),
+    }));
+  }
+
+  public updateAddonRecipe(addonId: string, items: Array<{ ingredient_id: string; quantity: number }>): void {
+    const db = this.getDb();
+    if (!db.addon_recipe_items) db.addon_recipe_items = [];
+    db.addon_recipe_items = db.addon_recipe_items.filter((r) => r.addon_id !== addonId);
+
+    for (const item of items) {
+      db.addon_recipe_items.push({
+        id: `rcp_addon_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+        addon_id: addonId,
+        ingredient_id: item.ingredient_id,
+        quantity_base_per_addon: item.quantity,
+        is_verified: true,
+        created_at: new Date().toISOString(),
+      });
+    }
+
+    this.saveDb(db);
+  }
+
+  public verifyAddonRecipe(addonId: string): void {
+    const db = this.getDb();
+    if (!db.addon_recipe_items) return;
+    const items = db.addon_recipe_items.filter((r) => r.addon_id === addonId);
+    for (const it of items) {
+      it.is_verified = true;
+    }
     this.saveDb(db);
   }
 
@@ -822,23 +956,37 @@ class LocalStoreManager {
     const existing = db.sales.find((s) => s.idempotency_key === idempotencyKey);
     if (existing) return existing;
 
-    // Aggregate required ingredients
+    // Aggregate required ingredients from variants and addons
     const requiredIngredients: Record<string, number> = {};
     for (const item of items) {
       const recipes = db.variant_recipe_items.filter((r) => r.variant_id === item.variant_id);
-      if (recipes.length === 0) {
-        throw new Error(
-          `Resep untuk ${item.product_name} (${item.variant_name}) belum lengkap. Admin harus mengisi resep terlebih dahulu.`
-        );
+      // If variant has recipe items configured, aggregate required ingredients
+      if (recipes.length > 0) {
+        for (const r of recipes) {
+          requiredIngredients[r.ingredient_id] =
+            (requiredIngredients[r.ingredient_id] || 0) + r.quantity_base_per_serving * item.quantity;
+        }
       }
-      for (const r of recipes) {
-        requiredIngredients[r.ingredient_id] =
-          (requiredIngredients[r.ingredient_id] || 0) + r.quantity_base_per_serving * item.quantity;
+
+      // Addon recipes deduction
+      if (item.addons && item.addons.length > 0) {
+        for (const addon of item.addons) {
+          const addonRecipes = (db.addon_recipe_items || []).filter(
+            (ar) => ar.addon_id === addon.addon_id
+          );
+          for (const ar of addonRecipes) {
+            // addon.quantity is per cup; multiply by item.quantity (cups) and addon.quantity
+            const totalAddonUsage = ar.quantity_base_per_addon * addon.quantity * item.quantity;
+            requiredIngredients[ar.ingredient_id] =
+              (requiredIngredients[ar.ingredient_id] || 0) + totalAddonUsage;
+          }
+        }
       }
     }
 
-    // Check stock availability
+    // Check stock availability for all required ingredients
     for (const [ingId, reqQty] of Object.entries(requiredIngredients)) {
+      if (reqQty <= 0) continue;
       const ing = db.ingredients.find((i) => i.id === ingId);
       if (!ing || ing.stock_base < reqQty) {
         throw new Error(
@@ -847,17 +995,14 @@ class LocalStoreManager {
       }
     }
 
-    // Deduct stock & calculate total COGS
-    let totalCogs = 0;
+    // Deduct stock & record movements
     const saleId = `sale_${Date.now()}`;
 
     for (const [ingId, reqQty] of Object.entries(requiredIngredients)) {
+      if (reqQty <= 0) continue;
       const ing = db.ingredients.find((i) => i.id === ingId)!;
       ing.stock_base -= reqQty;
       ing.updated_at = new Date().toISOString();
-
-      const lineCogs = Math.round(reqQty * ing.average_cost_per_base);
-      totalCogs += lineCogs;
 
       db.inventory_movements.push({
         id: `mov_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
@@ -874,6 +1019,67 @@ class LocalStoreManager {
       });
     }
 
+    // Calculate snapshot COGS and line totals for items and addons
+    let totalSaleCogs = 0;
+
+    const saleItems: SaleItem[] = items.map((it) => {
+      // Calculate unit COGS for the variant
+      const vRecipes = db.variant_recipe_items.filter((r) => r.variant_id === it.variant_id);
+      let unitCogs = 0;
+      for (const vr of vRecipes) {
+        const ing = db.ingredients.find((i) => i.id === vr.ingredient_id);
+        const costPerBase = ing?.average_cost_per_base || 0;
+        unitCogs += Math.round(vr.quantity_base_per_serving * costPerBase);
+      }
+      const lineCogs = unitCogs * it.quantity;
+      totalSaleCogs += lineCogs;
+
+      // Calculate addon COGS and line total
+      const saleItemAddons: SaleItemAddon[] = (it.addons || []).map((a) => {
+        const aRecipes = (db.addon_recipe_items || []).filter(
+          (ar) => ar.addon_id === a.addon_id
+        );
+        let addonUnitCogs = 0;
+        for (const ar of aRecipes) {
+          const ing = db.ingredients.find((i) => i.id === ar.ingredient_id);
+          const costPerBase = ing?.average_cost_per_base || 0;
+          addonUnitCogs += Math.round(ar.quantity_base_per_addon * costPerBase);
+        }
+        const addonTotalQty = a.quantity * it.quantity;
+        const addonLineTotal = a.unit_price_idr * addonTotalQty;
+        const addonLineCogs = addonUnitCogs * addonTotalQty;
+        totalSaleCogs += addonLineCogs;
+
+        return {
+          id: `sia_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          sale_item_id: '',
+          addon_id: a.addon_id,
+          addon_name_snapshot: a.addon_name,
+          unit_price_idr: a.unit_price_idr,
+          quantity: addonTotalQty,
+          line_total_idr: addonLineTotal,
+          unit_cogs_idr: addonUnitCogs,
+          line_cogs_idr: addonLineCogs,
+          created_at: new Date().toISOString(),
+        };
+      });
+
+      return {
+        id: `si_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+        sale_id: saleId,
+        variant_id: it.variant_id,
+        product_name_snapshot: it.product_name,
+        variant_name_snapshot: it.variant_name,
+        unit_price_idr: it.unit_price_idr,
+        quantity: it.quantity,
+        line_total_idr: it.line_total_idr,
+        unit_cogs_idr: unitCogs,
+        line_cogs_idr: lineCogs,
+        created_at: new Date().toISOString(),
+        addons: saleItemAddons,
+      };
+    });
+
     const cashier = db.profiles.find((p) => p.id === cashierId);
 
     const newSale: Sale = {
@@ -887,7 +1093,7 @@ class LocalStoreManager {
       total_idr: totalIdr,
       cash_received_idr: cashReceivedIdr,
       change_due_idr: changeDueIdr,
-      total_cogs_idr: totalCogs,
+      total_cogs_idr: totalSaleCogs,
       idempotency_key: idempotencyKey,
       qris_reference: options?.qris_reference || null,
       notes: options?.notes || null,
@@ -896,31 +1102,7 @@ class LocalStoreManager {
       void_at: null,
       created_at: new Date().toISOString(),
       cashier,
-      items: items.map((it) => ({
-        id: `si_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
-        sale_id: saleId,
-        variant_id: it.variant_id,
-        product_name_snapshot: it.product_name,
-        variant_name_snapshot: it.variant_name,
-        unit_price_idr: it.unit_price_idr,
-        quantity: it.quantity,
-        line_total_idr: it.line_total_idr,
-        unit_cogs_idr: 0,
-        line_cogs_idr: 0,
-        created_at: new Date().toISOString(),
-        addons: (it.addons || []).map((a) => ({
-          id: `sia_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
-          sale_item_id: '',
-          addon_id: a.addon_id,
-          addon_name_snapshot: a.addon_name,
-          unit_price_idr: a.unit_price_idr,
-          quantity: a.quantity,
-          line_total_idr: a.unit_price_idr * a.quantity,
-          unit_cogs_idr: 0,
-          line_cogs_idr: 0,
-          created_at: new Date().toISOString(),
-        })),
-      })),
+      items: saleItems,
     };
 
     db.sales.push(newSale);
